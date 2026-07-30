@@ -2,13 +2,15 @@
 
 A lightweight, browser-based app to evaluate whether a business or product idea is worth pursuing.
 
-You rate an idea from 1 to 10 across two dimensions. The app calculates two weighted scores, applies a fixed decision matrix, and gives you a plain-language recommendation. It also keeps a history of evaluations and surfaces simple learned insights when patterns repeat.
+You submit an idea title and description. The app deterministically estimates its quality, feasibility, impact, originality, and clarity; maps those ratings to two weighted scores; and gives you a plain-language recommendation. It also keeps a history and surfaces simple learned insights when patterns repeat.
 
 ## Features
 
 - Weighted **PoC score** (technical feasibility) and **Market score** (market viability).
+- Automatic **idea score** and five-dimension rating breakdown.
 - Plain-language **recommendation** with a short explanation.
-- Input validation (title required, ratings must be integers 1–10).
+- No manual ratings; only a title and description are required.
+- Input validation (title required, description must contain at least 20 characters).
 - Multiple evaluations without reloading the page.
 - **Memory**: every completed evaluation is stored in the browser.
 - **Self-learning insights**: deterministic heuristic rules generated from repeated history.
@@ -21,9 +23,21 @@ No installation, build step, or dependencies. Open the app directly in a browser
 src/index.html
 ```
 
-## How scoring works
+## How automatic rating works
 
-Ratings are integers from 1 to 10.
+`idea-rater.js` uses transparent text signals such as description detail, target audience, stated problem, solution, implementation terms, expected outcomes, and lexical variety. It generates integer ratings from 1 to 10 for:
+
+- Quality
+- Feasibility
+- Impact
+- Originality
+- Clarity
+
+Their average is displayed as an automatic idea score from 10 to 100. The same description always produces the same result.
+
+> These are text-based estimates—not real market research or technical due diligence.
+
+The generated ratings are mapped to the original PoC and Market criteria. The official weighted formulas remain unchanged:
 
 **PoC score** (max 100):
 
@@ -48,7 +62,7 @@ Ratings are integers from 1 to 10.
 
 ## Memory
 
-After each successful evaluation, a record is appended to `localStorage` under the key `v-score-evaluations` (a JSON array). Each record includes the timestamp, idea title, criteria, both scores, the recommendation, and the explanation. Previous records are never overwritten.
+After each successful evaluation, a record is appended to `localStorage` under the key `v-score-evaluations` (a JSON array). Each record includes the timestamp, title, description, automatic ratings, mapped criteria, both scores, recommendation, and explanation. Previous records are never overwritten.
 
 Inspect the history in the browser console:
 
@@ -77,6 +91,7 @@ Matching rules are shown as extra guidance under **Learned insights**. They neve
 │   ├── css/
 │   │   └── styles.css  # Styling
 │   └── js/
+│       ├── idea-rater.js # Deterministic automatic rating
 │       ├── memory.js     # Evaluation history (localStorage)
 │       ├── learning.js   # Heuristic rule generation and matching
 │       └── script.js     # Scoring, validation, and UI workflow

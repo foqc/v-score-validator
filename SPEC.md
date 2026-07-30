@@ -43,18 +43,14 @@ The application SHALL:
 
 * Run entirely in the browser.
 * Ask the user to enter an idea name or description.
-* Collect ratings from 1 to 10 for the four PoC criteria:
+* Automatically generate ratings from the submitted idea description.
+* Evaluate the idea across:
 
-  * Technical Novelty
-  * Defined Scope
-  * Resource Accessibility
-  * Measurable Outcome
-* Collect ratings from 1 to 10 for the four Market criteria:
-
-  * Pain Severity
-  * Willingness to Pay
-  * Market Size
-  * Differentiation
+  * Quality
+  * Feasibility
+  * Impact
+  * Originality
+  * Clarity
 * Calculate both weighted scores.
 * Preserve completed evaluations in browser storage across sessions.
 * Derive deterministic heuristic rules from repeated historical patterns.
@@ -90,11 +86,11 @@ The user can enter an idea title.
 
 ### FR-2
 
-The user can rate each PoC criterion from 1 to 10.
+The user provides an idea description of at least 20 characters.
 
 ### FR-3
 
-The user can rate each Market criterion from 1 to 10.
+The application deterministically generates integer ratings from 1 to 10 for quality, feasibility, impact, originality, and clarity. It displays each rating and an overall automatic score from 10 to 100.
 
 ### FR-4
 
@@ -156,7 +152,7 @@ The user can perform multiple evaluations without reloading the page.
 
 ### FR-9
 
-After every successful evaluation, the application stores the timestamp, idea title, criteria, scores, recommendation, and explanation in browser local storage without removing previous evaluations.
+After every successful evaluation, the application stores the timestamp, idea title, description, automatic ratings, mapped criteria, scores, recommendation, and explanation in browser local storage without removing previous evaluations.
 
 ### FR-10
 
@@ -197,8 +193,8 @@ The application shall:
 
 # Assumptions
 
-* Users understand the meaning of each scoring criterion.
-* All ratings are integers between 1 and 10.
+* Automatically generated ratings are deterministic text-based estimates, not real market research or technical due diligence.
+* Generated ratings are integers between 1 and 10.
 * Calculations use the official weighting rules defined by the challenge.
 
 ---
@@ -208,6 +204,8 @@ The application shall:
 The project is complete when:
 
 * The user can complete an evaluation.
+* No manual ratings are requested.
+* The automatic score and five generated ratings are clearly displayed.
 * Both scores are calculated correctly.
 * The recommendation matrix produces the correct verdict.
 * A short explanation accompanies every verdict.
@@ -223,63 +221,33 @@ The project is complete when:
 
 The implementation must successfully pass the following scenarios.
 
-## Scenario 1
+## Scenario 1 — Determinism
 
-Input
+Evaluate the same title and description twice.
 
-All values = 10
-
-Expected
-
-PoC Score = 100
-
-Market Score = 100
-
-Recommendation:
-
-Go / Full Speed Ahead
+Expected: automatic ratings, automatic score, PoC score, Market score, and recommendation are identical.
 
 ---
 
-## Scenario 2
+## Scenario 2 — Validation
 
-Input
+Submit an empty title or a description shorter than 20 characters.
 
-All values = 1
-
-Expected
-
-PoC Score = 10
-
-Market Score = 10
-
-Recommendation:
-
-Reframe or Shelve
+Expected: a visible validation error and no evaluation record.
 
 ---
 
-## Scenario 3
+## Scenario 3 — Automatic rating
 
-Input
+Submit a detailed idea describing users, problem, solution, implementation approach, and expected impact.
 
-Values producing scores close to 65.
-
-Expected
-
-The recommendation changes correctly when crossing the threshold.
+Expected: five generated ratings between 1 and 10 and an overall automatic score between 10 and 100.
 
 ---
 
-## Scenario 4
+## Scenario 4 — Official scoring
 
-Input
-
-Random manually calculated values.
-
-Expected
-
-Application results exactly match manual calculations.
+Expected: generated ratings map to the existing PoC and Market criteria, weighted calculations remain exact, and the official 65-threshold matrix selects the recommendation.
 
 ---
 

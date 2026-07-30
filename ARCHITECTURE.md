@@ -62,6 +62,9 @@ User Interface
 Input Validation
    │
    ▼
+Automatic Idea Rater
+   │
+   ▼
 Score Calculator
    │
    ▼
@@ -71,9 +74,11 @@ Recommendation Engine
 DOM Renderer
 ```
 
-The UI collects user input.
+The UI collects an idea title and description.
 
-The calculator computes both weighted scores.
+The idea rater derives five transparent text-based estimates and maps them to the existing PoC and Market criteria.
+
+The calculator computes both weighted scores from those mapped criteria.
 
 The recommendation engine determines the final verdict.
 
@@ -90,6 +95,7 @@ The renderer updates the page with the results.
 │   ├── css/
 │   │   └── styles.css
 │   └── js/
+│       ├── idea-rater.js
 │       ├── learning.js
 │       ├── memory.js
 │       └── script.js
@@ -111,7 +117,7 @@ Responsible for:
 
 * Page layout
 * User inputs
-* Score forms
+* Idea submission form
 * Result section
 * Button actions
 
@@ -147,6 +153,18 @@ Contains the evaluation workflow and UI logic.
 
 ---
 
+## src/js/idea-rater.js
+
+Responsible for:
+
+* Analyzing the submitted description with deterministic text signals
+* Generating quality, feasibility, impact, originality, and clarity ratings
+* Mapping generated ratings to the official PoC and Market criteria
+
+The ratings are estimates of description quality and specificity, not real-world validation.
+
+---
+
 ## src/js/memory.js
 
 Responsible for:
@@ -175,15 +193,29 @@ Contains no recommendation-matrix or DOM rendering logic.
 
 # Logical Modules
 
-The JavaScript is split by responsibility: `script.js` handles evaluation behavior, `memory.js` stores evaluations, and `learning.js` generates and matches heuristic rules.
+The JavaScript is split by responsibility: `script.js` handles the workflow, `idea-rater.js` generates ratings, `memory.js` stores evaluations, and `learning.js` generates and matches heuristic rules.
 
 ## Input Module
 
 Responsibilities:
 
 * Read form values
-* Validate ranges
-* Convert values to numbers
+* Require a title
+* Require a description of at least 20 characters
+
+---
+
+## Automatic Idea Rater
+
+Responsibilities:
+
+* Tokenize the idea description
+* Count transparent keyword and specificity signals
+* Generate five integer ratings from 1 to 10
+* Return an overall score from 10 to 100
+* Map the ratings to existing scoring criteria
+
+The same description always produces the same ratings.
 
 ---
 
@@ -286,6 +318,9 @@ User Input
       │
       ▼
 Validation
+      │
+      ▼
+Automatic Idea Rater
       │
       ▼
 PoC Calculator

@@ -3,23 +3,21 @@
 
   const THRESHOLD = 65;
 
-  /** @type {ReadonlyArray<{ id: string, key: string, label: string, weight: number }>} */
+  /** @type {ReadonlyArray<{ key: string, weight: number }>} */
   const POC_CRITERIA = Object.freeze([
-    { id: 'poc-novelty', key: 'novelty', label: 'Technical Novelty', weight: 3 },
-    { id: 'poc-scope', key: 'scope', label: 'Defined Scope', weight: 4 },
-    { id: 'poc-resources', key: 'resources', label: 'Resource Accessibility', weight: 2 },
-    { id: 'poc-outcome', key: 'outcome', label: 'Measurable Outcome', weight: 1 },
+    { key: 'novelty', weight: 3 },
+    { key: 'scope', weight: 4 },
+    { key: 'resources', weight: 2 },
+    { key: 'outcome', weight: 1 },
   ]);
 
-  /** @type {ReadonlyArray<{ id: string, key: string, label: string, weight: number }>} */
+  /** @type {ReadonlyArray<{ key: string, weight: number }>} */
   const MARKET_CRITERIA = Object.freeze([
-    { id: 'market-pain', key: 'pain', label: 'Pain Severity', weight: 4 },
-    { id: 'market-pay', key: 'pay', label: 'Willingness to Pay', weight: 3 },
-    { id: 'market-size', key: 'size', label: 'Market Size', weight: 2 },
-    { id: 'market-diff', key: 'diff', label: 'Differentiation', weight: 1 },
+    { key: 'pain', weight: 4 },
+    { key: 'pay', weight: 3 },
+    { key: 'size', weight: 2 },
+    { key: 'diff', weight: 1 },
   ]);
-
-  const ALL_CRITERIA = Object.freeze([...POC_CRITERIA, ...MARKET_CRITERIA]);
 
   const EXPLANATIONS = Object.freeze({
     'Go / Full Speed Ahead':
@@ -61,53 +59,23 @@
   // Input
   // ---------------------------------------------------------------------------
 
-  const parseRating = (rawValue, label) => {
-    const trimmed = String(rawValue).trim();
-
-    if (trimmed === '') {
-      return { ok: false, error: `${label} is required.` };
-    }
-
-    const value = Number.parseInt(trimmed, 10);
-
-    // Reject decimals / junk: parseInt("7.5") === 7 but String(7) !== "7.5"
-    if (!Number.isInteger(value) || String(value) !== trimmed || value < 1 || value > 10) {
-      return {
-        ok: false,
-        error: `${label} must be a whole number between 1 and 10.`,
-      };
-    }
-
-    return { ok: true, value };
-  };
-
-  const readCriteria = (criteria, elements) => {
-    const values = {};
-
-    for (const { id, key, label } of criteria) {
-      const result = parseRating(elements.byId.get(id).value, label);
-      if (!result.ok) return result;
-      values[key] = result.value;
-    }
-
-    return { ok: true, values };
-  };
-
   const readInputs = (elements) => {
     const title = elements.title.value.trim();
     if (title === '') {
       return { ok: false, error: 'Idea title is required.' };
     }
 
-    const poc = readCriteria(POC_CRITERIA, elements);
-    if (!poc.ok) return poc;
-
-    const market = readCriteria(MARKET_CRITERIA, elements);
-    if (!market.ok) return market;
+    const description = elements.description.value.trim();
+    if (description.length < 20) {
+      return {
+        ok: false,
+        error: 'Describe the idea in at least 20 characters so ratings can be estimated.',
+      };
+    }
 
     return {
       ok: true,
-      data: { title, poc: poc.values, market: market.values },
+      data: { title, description },
     };
   };
 
@@ -127,8 +95,13 @@
 
   const renderResults = (
     elements,
-    { pocScore, marketScore, verdict, explanation, insights },
+    { autoScore, dimensions, pocScore, marketScore, verdict, explanation, insights },
   ) => {
+    elements.autoScore.textContent = `${autoScore} / 100`;
+    for (const [dimension, score] of Object.entries(dimensions)) {
+      elements.dimensionScores[dimension].textContent = String(score);
+    }
+
     elements.pocScore.textContent = String(pocScore);
     elements.marketScore.textContent = String(marketScore);
     elements.recommendation.textContent = verdict;
@@ -146,6 +119,10 @@
   };
 
   const clearResults = (elements) => {
+    elements.autoScore.textContent = '';
+    Object.values(elements.dimensionScores).forEach((element) => {
+      element.textContent = '';
+    });
     elements.pocScore.textContent = '';
     elements.marketScore.textContent = '';
     elements.recommendation.textContent = '';
@@ -160,20 +137,26 @@
   // ---------------------------------------------------------------------------
 
   const getElements = () => {
-    const byId = new Map(ALL_CRITERIA.map(({ id }) => [id, $(id)]));
-
     return {
       form: $('evaluation-form'),
       title: $('idea-title'),
+      description: $('idea-description'),
       error: $('error-message'),
       results: $('results'),
+      autoScore: $('auto-score'),
+      dimensionScores: {
+        quality: $('rating-quality'),
+        feasibility: $('rating-feasibility'),
+        impact: $('rating-impact'),
+        originality: $('rating-originality'),
+        clarity: $('rating-clarity'),
+      },
       pocScore: $('poc-score'),
       marketScore: $('market-score'),
       recommendation: $('recommendation'),
       explanation: $('explanation'),
       insights: $('learning-insights'),
       insightList: $('insight-list'),
-      byId,
     };
   };
 
@@ -186,15 +169,19 @@
       return;
     }
 
-    const pocScore = calculatePocScore(input.data.poc);
-    const marketScore = calculateMarketScore(input.data.market);
+    const rating = window.VScoreIdeaRater.rateIdea(input.data.description);
+    const pocScore = calculatePocScore(rating.poc);
+    const marketScore = calculateMarketScore(rating.market);
     const recommendation = getRecommendation(pocScore, marketScore);
 
     const evaluation = {
       timestamp: new Date().toISOString(),
       ideaTitle: input.data.title,
-      pocCriteria: input.data.poc,
-      marketCriteria: input.data.market,
+      ideaDescription: input.data.description,
+      automaticScore: rating.autoScore,
+      automaticRatings: rating.dimensions,
+      pocCriteria: rating.poc,
+      marketCriteria: rating.market,
       pocScore,
       marketScore,
       recommendation: recommendation.verdict,
@@ -209,7 +196,14 @@
     const insights = [...new Set([...existingInsights, ...generatedInsights])];
 
     clearError(elements);
-    renderResults(elements, { pocScore, marketScore, ...recommendation, insights });
+    renderResults(elements, {
+      autoScore: rating.autoScore,
+      dimensions: rating.dimensions,
+      pocScore,
+      marketScore,
+      ...recommendation,
+      insights,
+    });
   };
 
   const init = () => {

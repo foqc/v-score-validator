@@ -49,14 +49,6 @@ body {
   background-color: #ffffff;
 }
 
-.form-section--poc {
-  border-left: 4px solid #2f6f9f;
-}
-
-.form-section--market {
-  border-left: 4px solid #3d7a5a;
-}
-
 .form-section h2 {
   margin: 0 0 0.25rem;
   font-size: 1.125rem;
@@ -70,7 +62,7 @@ body {
   text-wrap: pretty;
 }
 
-.criteria-grid {
+.idea-fields {
   display: grid;
   gap: 1rem;
 }
@@ -86,7 +78,7 @@ body {
 }
 
 .field input[type="text"],
-.field input[type="number"] {
+.field textarea {
   width: 100%;
   padding: 0.5rem 0.625rem;
   border: 1px solid #9aa5b1;
@@ -96,12 +88,12 @@ body {
   background-color: #ffffff;
 }
 
-.field input[type="number"] {
-  font-variant-numeric: tabular-nums;
+.field textarea {
+  resize: vertical;
 }
 
 .field input[type="text"]:focus,
-.field input[type="number"]:focus {
+.field textarea:focus {
   outline: 2px solid #2f6f9f;
   outline-offset: 1px;
   border-color: #2f6f9f;
@@ -192,6 +184,50 @@ body {
   text-wrap: pretty;
 }
 
+.auto-rating {
+  padding: 0.875rem 1rem;
+  border-left: 0.25rem solid #2f6f9f;
+  background-color: #eef5fa;
+}
+
+#auto-score {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: #52606d;
+  text-wrap: pretty;
+}
+
+.dimension-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  gap: 0.75rem;
+  margin: 0.5rem 0 0;
+}
+
+.dimension-grid > div {
+  padding: 0.625rem;
+  border: 1px solid #d9e2ec;
+  border-radius: 0.25rem;
+  background-color: #f8fafc;
+}
+
+.dimension-grid dt {
+  font-size: 0.8125rem;
+}
+
+.dimension-grid dd {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
 #poc-score,
 #market-score {
   font-size: 1.5rem;
@@ -231,10 +267,6 @@ body {
 
   .app-header h1 {
     font-size: 2rem;
-  }
-
-  .criteria-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .results-grid {

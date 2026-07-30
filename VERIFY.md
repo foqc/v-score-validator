@@ -1,94 +1,57 @@
 # V-Score Validator — Verification
 
-Verification fixtures and checklist for the browser app (`src/index.html`, `src/js/script.js`, and `src/js/memory.js`). Threshold is **65 inclusive** (`≥ 65` / `< 65`).
+The app accepts an idea title and description, generates ratings automatically, and applies the unchanged official formulas and 65-point recommendation matrix.
 
-## Formulas
+## Deterministic fixture
 
-**PoC Score** = (Novelty × 3) + (Scope × 4) + (Resources × 2) + (Outcome × 1)
+Description:
 
-**Market Score** = (Pain × 4) + (Pay × 3) + (Size × 2) + (Differentiation × 1)
+> A web tool for small retail teams that automates inventory alerts, reducing stockouts and manual spreadsheet work using local sales data.
 
-## Scenario 1 — All 10s
+Expected automatic ratings:
 
-| Field | Value |
-|-------|------:|
-| All eight ratings | 10 |
+| Dimension | Rating |
+|-----------|-------:|
+| Quality | 8 |
+| Feasibility | 7 |
+| Impact | 5 |
+| Originality | 6 |
+| Clarity | 8 |
+| Overall automatic score | 68 / 100 |
 
-| Score | Expected |
-|-------|---------:|
-| PoC | 30+40+20+10 = **100** |
-| Market | 40+30+20+10 = **100** |
-| Verdict | **Go / Full Speed Ahead** |
+Expected mapped criteria:
 
-## Scenario 2 — All 1s
+- PoC: Novelty 6, Scope 8, Resources 7, Outcome 7
+- Market: Pain 5, Pay 8, Size 7, Differentiation 6
 
-| Field | Value |
-|-------|------:|
-| All eight ratings | 1 |
+Expected weighted results:
 
-| Score | Expected |
-|-------|---------:|
-| PoC | 3+4+2+1 = **10** |
-| Market | 4+3+2+1 = **10** |
-| Verdict | **Reframe or Shelve** |
+- PoC = (6×3) + (8×4) + (7×2) + (7×1) = **71**
+- Market = (5×4) + (8×3) + (7×2) + (6×1) = **64**
+- Recommendation = **Validate Demand**
 
-## Scenario 3 — Threshold boundaries
+Running the same description repeatedly must produce the exact same ratings and scores.
 
-Use idea title `Boundary Test` for all cases.
+## Official matrix boundaries
 
-PoC weights: N×3 + S×4 + R×2 + O×1  
-Market weights: Pain×4 + Pay×3 + Size×2 + Diff×1
+The recommendation engine remains unchanged:
 
-| Case | PoC (N, S, R, O) | Market (Pain, Pay, Size, Diff) | PoC | Market | Verdict |
-|------|------------------|--------------------------------|-----|--------|---------|
-| 3a | 5, 9, 5, 4 → 15+36+10+4 | 5, 10, 5, 5 → 20+30+10+5 | **65** | **65** | Go / Full Speed Ahead |
-| 3b | 5, 9, 5, 3 → 15+36+10+3 | 5, 10, 5, 5 → 20+30+10+5 | **64** | **65** | De-risk First |
-| 3c | 5, 9, 5, 4 → 15+36+10+4 | 5, 10, 5, 4 → 20+30+10+4 | **65** | **64** | Validate Demand |
-| 3d | 5, 9, 5, 3 → 15+36+10+3 | 5, 10, 5, 4 → 20+30+10+4 | **64** | **64** | Reframe or Shelve |
+- 65 / 65 → Go / Full Speed Ahead
+- 64 / 65 → De-risk First
+- 65 / 64 → Validate Demand
+- 64 / 64 → Reframe or Shelve
 
-## Scenario 4 — Manual spot check
+## Manual checklist
 
-| Field | Value |
-|-------|------:|
-| Novelty | 8 |
-| Scope | 6 |
-| Resources | 7 |
-| Outcome | 9 |
-| Pain | 9 |
-| Pay | 4 |
-| Size | 8 |
-| Diff | 3 |
-
-| Score | Expected |
-|-------|---------:|
-| PoC | 24+24+14+9 = **71** |
-| Market | 36+12+16+3 = **67** |
-| Verdict | **Go / Full Speed Ahead** |
-
-## Expected explanations
-
-| Verdict | Explanation |
-|---------|-------------|
-| Go / Full Speed Ahead | Both technical feasibility and market viability clear the 65 threshold. The idea is strong enough to pursue at full speed. |
-| De-risk First | Market viability is strong, but technical feasibility is below 65. Reduce technical risk before scaling. |
-| Validate Demand | Technical feasibility is strong, but market viability is below 65. Validate demand and willingness to pay before building further. |
-| Reframe or Shelve | Both scores are below 65. Reframe the idea substantially or shelve it for now. |
-
-## Manual test checklist
-
-- [ ] Empty/whitespace idea title is rejected with a visible error (no scores shown)
-- [ ] Non-integer, out-of-range (&lt;1 or &gt;10), or blank ratings are rejected
-- [ ] Valid Evaluate shows PoC score, Market score, recommendation, and explanation
-- [ ] Reset clears all inputs, hides/clears results, and clears errors
-- [ ] Multiple evaluations work without reloading the page
-- [ ] Scenarios 1–4 produce the expected scores and verdicts above
-- [ ] `localStorage.getItem('v-score-evaluations')` is a valid JSON array
-- [ ] Each successful evaluation appends one complete record without removing earlier records
-- [ ] Reloading the page preserves previously stored evaluations
+- [ ] No manual rating fields are displayed
+- [ ] Empty title is rejected
+- [ ] Description shorter than 20 characters is rejected
+- [ ] A valid description displays the overall score and five ratings
+- [ ] The deterministic fixture produces 68 overall, 71 PoC, and 64 Market
+- [ ] The result states that automatic ratings are text-based estimates
+- [ ] Reset clears inputs and generated results
+- [ ] Repeating the same input produces identical scores
+- [ ] Each successful evaluation stores the description and generated ratings
 - [ ] Invalid evaluations do not create memory records
-- [ ] One PoC-below-40 evaluation does not generate a rule; the second generates `low-poc`
-- [ ] Two Market-above-80 / PoC-below-50 evaluations generate `high-market-low-poc`
-- [ ] Two evaluations above 80 in both scores generate `high-both`
-- [ ] A generated rule persists in `v-score-learning-rules` after reloading
-- [ ] Matching rules appear under Learned insight; unrelated rules do not
-- [ ] Learned insights never change the official recommendation
+- [ ] Existing memory and learning rules persist after reload
+- [ ] Matching learned insights never modify the official recommendation

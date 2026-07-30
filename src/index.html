@@ -18,132 +18,32 @@
     <form id="evaluation-form" class="evaluation-form" novalidate>
       <section class="form-section">
         <h2>Idea</h2>
-        <div class="field">
-          <label for="idea-title">Idea title</label>
-          <input
-            type="text"
-            id="idea-title"
-            name="idea-title"
-            autocomplete="off"
-            placeholder="Enter your idea name or short description"
-          >
-        </div>
-      </section>
+        <p class="section-note">
+          Describe the problem, target users, proposed solution, expected impact, and how it could be built.
+          Ratings are generated automatically from your description.
+        </p>
 
-      <section class="form-section form-section--poc">
-        <h2>Technical Feasibility (PoC)</h2>
-        <p class="section-note">Rate each criterion from 1 to 10.</p>
-
-        <div class="criteria-grid">
+        <div class="idea-fields">
           <div class="field">
-            <label for="poc-novelty">Technical Novelty</label>
+            <label for="idea-title">Idea title</label>
             <input
-              type="number"
-              id="poc-novelty"
-              name="poc-novelty"
-              min="1"
-              max="10"
-              step="1"
-              inputmode="numeric"
+              type="text"
+              id="idea-title"
+              name="idea-title"
+              autocomplete="off"
+              placeholder="Enter your idea name"
             >
           </div>
 
           <div class="field">
-            <label for="poc-scope">Defined Scope</label>
-            <input
-              type="number"
-              id="poc-scope"
-              name="poc-scope"
-              min="1"
-              max="10"
-              step="1"
-              inputmode="numeric"
-            >
-          </div>
-
-          <div class="field">
-            <label for="poc-resources">Resource Accessibility</label>
-            <input
-              type="number"
-              id="poc-resources"
-              name="poc-resources"
-              min="1"
-              max="10"
-              step="1"
-              inputmode="numeric"
-            >
-          </div>
-
-          <div class="field">
-            <label for="poc-outcome">Measurable Outcome</label>
-            <input
-              type="number"
-              id="poc-outcome"
-              name="poc-outcome"
-              min="1"
-              max="10"
-              step="1"
-              inputmode="numeric"
-            >
-          </div>
-        </div>
-      </section>
-
-      <section class="form-section form-section--market">
-        <h2>Market Viability</h2>
-        <p class="section-note">Rate each criterion from 1 to 10.</p>
-
-        <div class="criteria-grid">
-          <div class="field">
-            <label for="market-pain">Pain Severity</label>
-            <input
-              type="number"
-              id="market-pain"
-              name="market-pain"
-              min="1"
-              max="10"
-              step="1"
-              inputmode="numeric"
-            >
-          </div>
-
-          <div class="field">
-            <label for="market-pay">Willingness to Pay</label>
-            <input
-              type="number"
-              id="market-pay"
-              name="market-pay"
-              min="1"
-              max="10"
-              step="1"
-              inputmode="numeric"
-            >
-          </div>
-
-          <div class="field">
-            <label for="market-size">Market Size</label>
-            <input
-              type="number"
-              id="market-size"
-              name="market-size"
-              min="1"
-              max="10"
-              step="1"
-              inputmode="numeric"
-            >
-          </div>
-
-          <div class="field">
-            <label for="market-diff">Differentiation</label>
-            <input
-              type="number"
-              id="market-diff"
-              name="market-diff"
-              min="1"
-              max="10"
-              step="1"
-              inputmode="numeric"
-            >
+            <label for="idea-description">Idea description</label>
+            <textarea
+              id="idea-description"
+              name="idea-description"
+              rows="7"
+              minlength="20"
+              placeholder="Example: A web tool for small retail teams that automates inventory alerts, reducing stockouts and manual spreadsheet work."
+            ></textarea>
           </div>
         </div>
       </section>
@@ -160,6 +60,29 @@
       <h2>Results</h2>
 
       <dl class="results-grid">
+        <div class="result-item result-item--full auto-rating">
+          <dt>Automatically generated idea score</dt>
+          <dd>
+            <strong id="auto-score"></strong>
+            <p class="score-note">
+              Text-based estimate only; real feasibility and market impact still require validation.
+            </p>
+          </dd>
+        </div>
+
+        <div class="result-item result-item--full">
+          <dt>Rating breakdown (1–10)</dt>
+          <dd>
+            <dl class="dimension-grid">
+              <div><dt>Quality</dt><dd id="rating-quality"></dd></div>
+              <div><dt>Feasibility</dt><dd id="rating-feasibility"></dd></div>
+              <div><dt>Impact</dt><dd id="rating-impact"></dd></div>
+              <div><dt>Originality</dt><dd id="rating-originality"></dd></div>
+              <div><dt>Clarity</dt><dd id="rating-clarity"></dd></div>
+            </dl>
+          </dd>
+        </div>
+
         <div class="result-item">
           <dt>PoC Score</dt>
           <dd id="poc-score"></dd>
@@ -192,6 +115,7 @@
 
   <script src="js/memory.js"></script>
   <script src="js/learning.js"></script>
+  <script src="js/idea-rater.js"></script>
   <script src="js/script.js"></script>
 </body>
 </html>
