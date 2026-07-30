@@ -157,7 +157,7 @@ Contains the evaluation workflow and UI logic.
 
 Responsible for:
 
-* Analyzing the submitted description with deterministic text signals
+* Analyzing the submitted description with deterministic, normalized text signals
 * Generating quality, feasibility, impact, originality, and clarity ratings
 * Mapping generated ratings to the official PoC and Market criteria
 
@@ -210,12 +210,12 @@ Responsibilities:
 Responsibilities:
 
 * Tokenize the idea description
-* Count transparent keyword and specificity signals
-* Generate five integer ratings from 1 to 10
+* Measure transparent keyword and specificity signals as normalized strengths from 0 to 1
+* Map each signal strength onto five integer ratings from 1 to 10
 * Return an overall score from 10 to 100
 * Map the ratings to existing scoring criteria
 
-The same description always produces the same ratings.
+Signals are normalized so that ordinary one-sentence descriptions and richly detailed ones land at different points on the scale, keeping the rating distribution wide enough for the learning module to detect patterns. The same description always produces the same ratings.
 
 ---
 
@@ -307,7 +307,7 @@ Responsibilities:
 * Reuse existing rules across sessions
 * Return matching rules as supplemental insights
 
-Rules never modify the official recommendation.
+Rule thresholds are calibrated against the rating distribution the idea rater actually produces, so each pattern describes a minority of evaluations. A condition that no description can trigger, or that every description triggers, carries no information and is treated as a defect. Rules never modify the official recommendation.
 
 ---
 
@@ -363,15 +363,13 @@ The implementation should follow these principles:
 
 The application should validate:
 
-* Empty fields
-* Values below 1
-* Values above 10
-* Non-numeric values
+* A missing idea title
+* An idea description shorter than 20 characters
 
 When validation fails:
 
 * Show a user-friendly message.
-* Do not perform calculations.
+* Do not rate the idea, calculate scores, or store a record.
 
 ---
 
