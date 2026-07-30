@@ -21,9 +21,14 @@ After each completed evaluation:
 
 Rules:
 
-* PoC below 40 → technical validation.
-* Market above 80 and PoC below 50 → prioritize prototyping.
-* PoC and Market both above 80 → strong implementation candidate.
+* Clarity 4 or below → sharper problem and scope statement.
+* Feasibility 3 or below → technical feasibility review.
+* Impact 3 or below → measurable impact before investment.
+* Originality 4 or below → competitive review.
+* PoC below 50 → technical validation.
+* Every dimension 6 or above → strong implementation candidate.
+
+Thresholds must stay inside the range the automatic rater can produce, and each rule must describe a minority of evaluations. Because PoC and Market both derive from the same five ratings, they move together; conditions that assume independent scores (for example high Market with low PoC) are unreachable and must not be used. A rule that matches every evaluation is as useless as one that matches none.
 
 For each new evaluation:
 

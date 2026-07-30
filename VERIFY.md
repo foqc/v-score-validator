@@ -55,3 +55,22 @@ The recommendation engine remains unchanged:
 - [ ] Invalid evaluations do not create memory records
 - [ ] Existing memory and learning rules persist after reload
 - [ ] Matching learned insights never modify the official recommendation
+
+## Learning rules
+
+Rules are generated after a pattern appears in **two** stored evaluations, and persist in `v-score-learning-rules`.
+
+| Rule | Condition |
+|------|-----------|
+| `vague-description` | Clarity ≤ 4 |
+| `unclear-feasibility` | Feasibility ≤ 3 |
+| `impact-not-stated` | Impact ≤ 3 |
+| `low-differentiation` | Originality ≤ 4 |
+| `low-poc` | PoC < 50 |
+| `well-rounded` | Every dimension ≥ 6 |
+
+Thresholds must stay inside the rater's reachable range (PoC ≈ 21–85, Market ≈ 17–97) and must describe a minority of evaluations. A rule that no description can trigger, or that every description triggers, is a defect.
+
+- [ ] Evaluating a vague idea twice (for example `Something that we might build later for people maybe`) generates `vague-description`, `unclear-feasibility`, `impact-not-stated`, `low-differentiation`, and `low-poc`
+- [ ] Evaluating a detailed idea twice (audience, problem, implementation, and measurable outcome) generates `well-rounded`
+- [ ] A single matching evaluation does not generate a rule

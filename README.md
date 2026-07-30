@@ -76,9 +76,14 @@ The app derives simple, deterministic rules from the stored history. A rule is g
 
 Rules:
 
-- PoC below 40 → usually requires technical validation.
-- Market above 80 but PoC below 50 → should prioritize prototyping.
-- PoC and Market both above 80 → strong implementation candidate.
+- Clarity 4 or below → needs a sharper problem and scope statement.
+- Feasibility 3 or below → requires a technical feasibility review.
+- Impact 3 or below → needs measurable impact before investment.
+- Originality 4 or below → needs a competitive review.
+- PoC below 50 → usually requires technical validation.
+- Every dimension 6 or above → strong implementation candidate.
+
+Thresholds are calibrated against the distribution the automatic rater actually produces, so each rule describes a minority of evaluations. A rule that matched every idea would carry no information.
 
 Matching rules are shown as extra guidance under **Learned insights**. They never replace or modify the official recommendation matrix. This is not machine learning and uses no external APIs.
 
