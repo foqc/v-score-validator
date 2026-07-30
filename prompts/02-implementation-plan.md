@@ -38,7 +38,8 @@ Approved analysis plan for V-Score Validator. Agents implementing this project M
 │   ├── css/
 │   │   └── styles.css      # Layout / readability / error feedback
 │   └── js/
-│       └── script.js       # All application logic (sectioned modules)
+│       ├── memory.js       # Browser persistence
+│       └── script.js       # Evaluation and UI logic
 ├── VERIFY.md           # Manual verification fixtures
 ├── SPEC.md
 ├── ARCHITECTURE.md

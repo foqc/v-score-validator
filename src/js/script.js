@@ -174,6 +174,17 @@
     const marketScore = calculateMarketScore(input.data.market);
     const recommendation = getRecommendation(pocScore, marketScore);
 
+    window.VScoreMemory.append({
+      timestamp: new Date().toISOString(),
+      ideaTitle: input.data.title,
+      pocCriteria: input.data.poc,
+      marketCriteria: input.data.market,
+      pocScore,
+      marketScore,
+      recommendation: recommendation.verdict,
+      explanation: recommendation.explanation,
+    });
+
     clearError(elements);
     renderResults(elements, { pocScore, marketScore, ...recommendation });
   };
@@ -181,6 +192,8 @@
   const init = () => {
     const elements = getElements();
     const { form } = elements;
+
+    window.VScoreMemory.initialize();
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();

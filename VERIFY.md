@@ -1,6 +1,6 @@
 # V-Score Validator — Verification
 
-Verification fixtures and checklist for the browser app (`src/index.html` + `src/js/script.js`). Threshold is **65 inclusive** (`≥ 65` / `< 65`).
+Verification fixtures and checklist for the browser app (`src/index.html`, `src/js/script.js`, and `src/js/memory.js`). Threshold is **65 inclusive** (`≥ 65` / `< 65`).
 
 ## Formulas
 
@@ -82,3 +82,7 @@ Market weights: Pain×4 + Pay×3 + Size×2 + Diff×1
 - [ ] Reset clears all inputs, hides/clears results, and clears errors
 - [ ] Multiple evaluations work without reloading the page
 - [ ] Scenarios 1–4 produce the expected scores and verdicts above
+- [ ] `localStorage.getItem('v-score-evaluations')` is a valid JSON array
+- [ ] Each successful evaluation appends one complete record without removing earlier records
+- [ ] Reloading the page preserves previously stored evaluations
+- [ ] Invalid evaluations do not create memory records

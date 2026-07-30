@@ -56,6 +56,7 @@ The application SHALL:
   * Market Size
   * Differentiation
 * Calculate both weighted scores.
+* Preserve completed evaluations in browser storage across sessions.
 * Display:
 
   * PoC Score
@@ -72,7 +73,6 @@ The application will NOT:
 * Perform real market research.
 * Connect to external APIs.
 * Use AI to determine scores.
-* Store evaluation history.
 * Require authentication.
 * Use a database.
 * Require internet access after loading.
@@ -152,6 +152,10 @@ The application shall explain why the recommendation was selected.
 
 The user can perform multiple evaluations without reloading the page.
 
+### FR-9
+
+After every successful evaluation, the application stores the timestamp, idea title, criteria, scores, recommendation, and explanation in browser local storage without removing previous evaluations.
+
 ---
 
 # Non-Functional Requirements
@@ -203,6 +207,7 @@ The project is complete when:
 * A short explanation accompanies every verdict.
 * Invalid inputs are rejected.
 * The interface updates without reloading the page.
+* Completed evaluations persist across browser sessions.
 * Every verification scenario passes successfully.
 
 ---

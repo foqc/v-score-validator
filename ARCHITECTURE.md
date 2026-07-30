@@ -4,7 +4,7 @@
 
 This project is implemented as a simple client-side web application.
 
-The entire application runs inside the browser using only HTML5, CSS3 and Vanilla JavaScript (ES6). No server, build tools or external dependencies are required.
+The entire application runs inside the browser using only HTML5, CSS3 and Vanilla JavaScript (ES6). Completed evaluations are persisted with the browser's `localStorage` API. No server, build tools or external dependencies are required.
 
 The architecture prioritizes simplicity, readability, maintainability and separation of responsibilities.
 
@@ -25,6 +25,10 @@ None
 ## Database
 
 None
+
+## Browser Storage
+
+`localStorage`, containing a JSON array under the `v-score-evaluations` key.
 
 ## Build Tools
 
@@ -83,6 +87,7 @@ The renderer updates the page with the results.
 │   ├── css/
 │   │   └── styles.css
 │   └── js/
+│       ├── memory.js
 │       └── script.js
 │
 ├── SPEC.md
@@ -134,13 +139,26 @@ Responsible for:
 * Rendering results
 * Event handling
 
-All application logic resides here.
+Contains the evaluation workflow and UI logic.
+
+---
+
+## src/js/memory.js
+
+Responsible for:
+
+* Initializing browser storage
+* Reading stored evaluations
+* Appending completed evaluations
+* Repairing malformed stored data
+
+Contains no scoring or DOM rendering logic.
 
 ---
 
 # Logical Modules
 
-Although implemented inside a single JavaScript file, the code should be organized into logical sections.
+The JavaScript is split by responsibility: `script.js` handles evaluation behavior and `memory.js` handles persistence.
 
 ## Input Module
 
@@ -220,6 +238,17 @@ This module should never perform calculations.
 
 ---
 
+## Memory Module
+
+Responsibilities:
+
+* Initialize browser storage as a valid JSON array
+* Preserve existing evaluation records
+* Append each successful evaluation
+* Repair malformed stored data before saving new records
+
+---
+
 # Data Flow
 
 ```
@@ -236,6 +265,9 @@ Market Calculator
       │
       ▼
 Recommendation Engine
+      │
+      ▼
+Persist Evaluation
       │
       ▼
 Render Results
@@ -291,7 +323,6 @@ Future enhancements should be easy to add without changing the core calculation 
 
 Examples:
 
-* Saving evaluation history
 * Exporting results
 * AI-assisted scoring
 * Charts and visualizations
