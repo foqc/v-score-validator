@@ -46,7 +46,7 @@ None
 User
    │
    ▼
-index.html
+src/index.html
    │
    ▼
 User Interface
@@ -78,10 +78,12 @@ The renderer updates the page with the results.
 
 ```
 /
-│
-├── index.html
-├── styles.css
-├── script.js
+├── src/
+│   ├── index.html
+│   ├── css/
+│   │   └── styles.css
+│   └── js/
+│       └── script.js
 │
 ├── SPEC.md
 ├── ARCHITECTURE.md
@@ -94,7 +96,7 @@ The renderer updates the page with the results.
 
 # Component Responsibilities
 
-## index.html
+## src/index.html
 
 Responsible for:
 
@@ -108,7 +110,7 @@ Contains no business logic.
 
 ---
 
-## styles.css
+## src/css/styles.css
 
 Responsible for:
 
@@ -121,7 +123,7 @@ Contains no application logic.
 
 ---
 
-## script.js
+## src/js/script.js
 
 Responsible for:
 
