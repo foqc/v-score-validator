@@ -28,7 +28,10 @@ None
 
 ## Browser Storage
 
-`localStorage`, containing a JSON array under the `v-score-evaluations` key.
+`localStorage`, containing JSON arrays under:
+
+* `v-score-evaluations` for completed evaluations
+* `v-score-learning-rules` for generated heuristic rules
 
 ## Build Tools
 
@@ -87,6 +90,7 @@ The renderer updates the page with the results.
 │   ├── css/
 │   │   └── styles.css
 │   └── js/
+│       ├── learning.js
 │       ├── memory.js
 │       └── script.js
 │
@@ -156,9 +160,22 @@ Contains no scoring or DOM rendering logic.
 
 ---
 
+## src/js/learning.js
+
+Responsible for:
+
+* Defining transparent heuristic patterns
+* Counting repeated patterns in evaluation history
+* Persisting generated rules
+* Matching evaluations against existing rules
+
+Contains no recommendation-matrix or DOM rendering logic.
+
+---
+
 # Logical Modules
 
-The JavaScript is split by responsibility: `script.js` handles evaluation behavior and `memory.js` handles persistence.
+The JavaScript is split by responsibility: `script.js` handles evaluation behavior, `memory.js` stores evaluations, and `learning.js` generates and matches heuristic rules.
 
 ## Input Module
 
@@ -249,6 +266,19 @@ Responsibilities:
 
 ---
 
+## Learning Module
+
+Responsibilities:
+
+* Generate a rule only after its pattern occurs at least twice
+* Persist rules as a valid JSON array
+* Reuse existing rules across sessions
+* Return matching rules as supplemental insights
+
+Rules never modify the official recommendation.
+
+---
+
 # Data Flow
 
 ```
@@ -268,6 +298,9 @@ Recommendation Engine
       │
       ▼
 Persist Evaluation
+      │
+      ▼
+Generate / Match Rules
       │
       ▼
 Render Results

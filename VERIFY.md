@@ -86,3 +86,9 @@ Market weights: Pain×4 + Pay×3 + Size×2 + Diff×1
 - [ ] Each successful evaluation appends one complete record without removing earlier records
 - [ ] Reloading the page preserves previously stored evaluations
 - [ ] Invalid evaluations do not create memory records
+- [ ] One PoC-below-40 evaluation does not generate a rule; the second generates `low-poc`
+- [ ] Two Market-above-80 / PoC-below-50 evaluations generate `high-market-low-poc`
+- [ ] Two evaluations above 80 in both scores generate `high-both`
+- [ ] A generated rule persists in `v-score-learning-rules` after reloading
+- [ ] Matching rules appear under Learned insight; unrelated rules do not
+- [ ] Learned insights never change the official recommendation

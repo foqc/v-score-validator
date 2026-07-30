@@ -57,12 +57,14 @@ The application SHALL:
   * Differentiation
 * Calculate both weighted scores.
 * Preserve completed evaluations in browser storage across sessions.
+* Derive deterministic heuristic rules from repeated historical patterns.
 * Display:
 
   * PoC Score
   * Market Score
   * Final Recommendation
   * Short explanation of the recommendation.
+  * Any learned rule matching the current evaluation.
 
 ---
 
@@ -156,6 +158,10 @@ The user can perform multiple evaluations without reloading the page.
 
 After every successful evaluation, the application stores the timestamp, idea title, criteria, scores, recommendation, and explanation in browser local storage without removing previous evaluations.
 
+### FR-10
+
+After a pattern appears in at least two stored evaluations, the application persists a human-readable heuristic rule. Matching rules are displayed as additional guidance and never alter the official recommendation.
+
 ---
 
 # Non-Functional Requirements
@@ -208,6 +214,7 @@ The project is complete when:
 * Invalid inputs are rejected.
 * The interface updates without reloading the page.
 * Completed evaluations persist across browser sessions.
+* Generated rules persist and matching rules appear as additional insights.
 * Every verification scenario passes successfully.
 
 ---

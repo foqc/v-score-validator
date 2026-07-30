@@ -182,6 +182,21 @@ body {
   font-weight: 700;
 }
 
+.insight {
+  padding: 0.75rem 1rem;
+  border-left: 0.25rem solid #b7791f;
+  background-color: #fffaf0;
+}
+
+#insight-list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+#insight-list li + li {
+  margin-top: 0.5rem;
+}
+
 .is-hidden {
   display: none;
 }

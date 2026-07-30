@@ -125,11 +125,23 @@
     elements.error.hidden = true;
   };
 
-  const renderResults = (elements, { pocScore, marketScore, verdict, explanation }) => {
+  const renderResults = (
+    elements,
+    { pocScore, marketScore, verdict, explanation, insights },
+  ) => {
     elements.pocScore.textContent = String(pocScore);
     elements.marketScore.textContent = String(marketScore);
     elements.recommendation.textContent = verdict;
     elements.explanation.textContent = explanation;
+
+    elements.insightList.replaceChildren(
+      ...insights.map((insight) => {
+        const item = document.createElement('li');
+        item.textContent = insight;
+        return item;
+      }),
+    );
+    elements.insights.classList.toggle('is-hidden', insights.length === 0);
     elements.results.classList.remove('is-hidden');
   };
 
@@ -138,6 +150,8 @@
     elements.marketScore.textContent = '';
     elements.recommendation.textContent = '';
     elements.explanation.textContent = '';
+    elements.insightList.replaceChildren();
+    elements.insights.classList.add('is-hidden');
     elements.results.classList.add('is-hidden');
   };
 
@@ -157,6 +171,8 @@
       marketScore: $('market-score'),
       recommendation: $('recommendation'),
       explanation: $('explanation'),
+      insights: $('learning-insights'),
+      insightList: $('insight-list'),
       byId,
     };
   };
@@ -174,7 +190,7 @@
     const marketScore = calculateMarketScore(input.data.market);
     const recommendation = getRecommendation(pocScore, marketScore);
 
-    window.VScoreMemory.append({
+    const evaluation = {
       timestamp: new Date().toISOString(),
       ideaTitle: input.data.title,
       pocCriteria: input.data.poc,
@@ -183,10 +199,17 @@
       marketScore,
       recommendation: recommendation.verdict,
       explanation: recommendation.explanation,
-    });
+    };
+
+    const existingInsights = window.VScoreLearning.match(evaluation);
+    window.VScoreMemory.append(evaluation);
+
+    const rules = window.VScoreLearning.generate(window.VScoreMemory.getAll());
+    const generatedInsights = window.VScoreLearning.match(evaluation, rules);
+    const insights = [...new Set([...existingInsights, ...generatedInsights])];
 
     clearError(elements);
-    renderResults(elements, { pocScore, marketScore, ...recommendation });
+    renderResults(elements, { pocScore, marketScore, ...recommendation, insights });
   };
 
   const init = () => {
@@ -194,6 +217,7 @@
     const { form } = elements;
 
     window.VScoreMemory.initialize();
+    window.VScoreLearning.initialize();
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
