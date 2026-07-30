@@ -28,11 +28,13 @@ body {
   font-size: 1.75rem;
   font-weight: 700;
   line-height: 1.2;
+  text-wrap: balance;
 }
 
 .app-intro {
   margin: 0;
   color: #52606d;
+  text-wrap: pretty;
 }
 
 .evaluation-form {
@@ -58,12 +60,14 @@ body {
 .form-section h2 {
   margin: 0 0 0.25rem;
   font-size: 1.125rem;
+  text-wrap: balance;
 }
 
 .section-note {
   margin: 0 0 1rem;
   font-size: 0.9375rem;
   color: #52606d;
+  text-wrap: pretty;
 }
 
 .criteria-grid {
@@ -92,6 +96,10 @@ body {
   background-color: #ffffff;
 }
 
+.field input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+
 .field input[type="text"]:focus,
 .field input[type="number"]:focus {
   outline: 2px solid #2f6f9f;
@@ -113,6 +121,11 @@ body {
   cursor: pointer;
   background-color: #ffffff;
   color: #1f2933;
+}
+
+.form-actions button:focus-visible {
+  outline: 2px solid #2f6f9f;
+  outline-offset: 2px;
 }
 
 #btn-evaluate {
@@ -176,16 +189,26 @@ body {
 .result-item dd {
   margin: 0;
   font-size: 1rem;
+  text-wrap: pretty;
+}
+
+#poc-score,
+#market-score {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 
 #recommendation {
+  font-size: 1.125rem;
   font-weight: 700;
 }
 
 .insight {
   padding: 0.75rem 1rem;
-  border-left: 0.25rem solid #b7791f;
-  background-color: #fffaf0;
+  border-left: 0.25rem solid #9aa5b1;
+  background-color: #f4f6f8;
 }
 
 #insight-list {
