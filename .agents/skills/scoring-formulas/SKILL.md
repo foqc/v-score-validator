@@ -33,13 +33,13 @@ Market Score = (pain×4) + (pay×3) + (size×2) + (diff×1)
 
 Max each axis = 100.
 
-## Commands
+## Command
 
 ```bash
-node scripts/compute-poc.mjs --ratings ratings.json
-node scripts/compute-market.mjs --ratings ratings.json
 node scripts/run-evaluation.mjs --ratings ratings.json
 ```
+
+Returns `pocScore`, `marketScore`, `recommendation`, and `explanation`.
 
 `ratings.json` shape:
 

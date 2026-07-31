@@ -26,11 +26,12 @@ Turn PoC Score and Market Score into a plain-language verdict with a fixed expla
 
 ## Command
 
-```bash
-node scripts/recommend.mjs --poc <n> --market <n>
-```
+Obtain the verdict from scoring scripts (never invent labels or explanations):
 
-Or obtain verdict from `run-evaluation.mjs` / `write-ui-result.mjs`.
+```bash
+node scripts/run-evaluation.mjs --ratings ratings.json
+node scripts/write-ui-result.mjs --ratings ratings.json
+```
 
 ## Rule
 

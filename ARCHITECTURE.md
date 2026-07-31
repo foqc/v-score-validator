@@ -38,7 +38,7 @@ Orchestrator skill / agent
 ratings.json
       │
       ▼
-run-evaluation.mjs / recommend.mjs
+run-evaluation.mjs
       │
       ▼
 evaluations/latest.json
@@ -91,7 +91,7 @@ src/ UI viewer
 | Deterministic calc | `scripts/*.mjs` | Validate, weight, matrix only |
 | Coordination | Orchestrator skill/agent | Sequence, spawn experts, audit, inconsistency resolution |
 | Knowledge retrieval | `memory-bank` + `memory-search.mjs` | Keyword search; no full-bank dumps |
-| Final recommendation | `recommend.mjs` + verdict-matrix skill | Matrix only; fixed explanations |
+| Final recommendation | `run-evaluation.mjs` + verdict-matrix skill | Matrix only; fixed explanations |
 | Presentation | `src/` | Render JSON; no scoring |
 
 ---
@@ -155,9 +155,7 @@ Pure CLI entry points around `scripts/lib/scoring.mjs`:
 * `validate-rating.mjs` — accept integer 1–10 or reject
 * `poc-resources.mjs` — print resource checklist
 * `score-item.mjs` — map answers to a validated rating
-* `compute-poc.mjs` / `compute-market.mjs` — weighted scores
-* `recommend.mjs` — matrix verdict + explanation
-* `run-evaluation.mjs` — full score + verdict from ratings JSON
+* `run-evaluation.mjs` — weighted scores + matrix verdict from ratings JSON
 * `write-ui-result.mjs` — write `evaluations/latest.json`
 * `memory-search.mjs` / `memory-capture.mjs` — knowledge index
 * `verify.mjs` — edge-case suite
