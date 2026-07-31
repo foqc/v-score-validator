@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V-Score Bridge</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    #boot-warning {
+      display: none;
+      margin: 1rem;
+      padding: 1rem 1.25rem;
+      border: 2px solid #c45c4a;
+      background: #2a1512;
+      color: #f2d6d1;
+      font: 15px/1.45 system-ui, sans-serif;
+    }
+    #boot-warning.is-visible { display: block; }
+    #boot-warning code {
+      display: inline-block;
+      margin-top: 0.35rem;
+      padding: 0.15rem 0.4rem;
+      background: #1a0d0b;
+    }
+  </style>
+</head>
+<body>
+  <div id="boot-warning" role="alert">
+    This page must be opened through the bridge server, not as a raw HTML file.
+    In a terminal run <code>cd bridge && npm start</code>, then open
+    <code>http://localhost:8787</code>.
+  </div>
+
+  <main class="shell">
+    <header class="hero">
+      <p class="brand">V-Score Bridge</p>
+      <h1>Evaluate an idea</h1>
+      <p class="lede">
+        Runs Technical and Market Cursor agents in parallel, then scores with the repo scripts.
+      </p>
+    </header>
+
+    <form id="eval-form" class="panel" action="#" method="post">
+      <label>
+        Idea title
+        <input id="title" name="title" type="text" required maxlength="200" autocomplete="off" placeholder="Short product name">
+      </label>
+      <label>
+        Description
+        <textarea id="description" name="description" required minlength="20" rows="6" placeholder="Problem, who it is for, and what you would build (min 20 characters)"></textarea>
+      </label>
+      <div class="actions">
+        <button type="button" id="btn-run" class="btn-primary">
+          <span class="btn-spinner" aria-hidden="true"></span>
+          <span class="btn-label">Evaluate</span>
+        </button>
+        <p id="form-error" class="error" role="alert" hidden></p>
+      </div>
+    </form>
+
+    <section id="progress" class="panel progress is-hidden" aria-live="polite">
+      <div class="progress-head">
+        <h2>Evaluation</h2>
+        <p id="phase-copy" class="phase-copy">Starting…</p>
+      </div>
+
+      <ol class="steps" id="steps" aria-label="Evaluation stages">
+        <li class="step" data-step="queued">
+          <span class="step-marker" aria-hidden="true"></span>
+          <span class="step-label">Queued</span>
+        </li>
+        <li class="step" data-step="experts">
+          <span class="step-marker" aria-hidden="true"></span>
+          <span class="step-label">Experts</span>
+        </li>
+        <li class="step" data-step="scoring">
+          <span class="step-marker" aria-hidden="true"></span>
+          <span class="step-label">Scoring</span>
+        </li>
+        <li class="step" data-step="done">
+          <span class="step-marker" aria-hidden="true"></span>
+          <span class="step-label">Done</span>
+        </li>
+      </ol>
+
+      <div class="agent-grid">
+        <article class="agent" data-agent="technical" data-state="pending">
+          <header>
+            <div class="agent-title">
+              <span class="status-icon" aria-hidden="true">
+                <span class="icon-idle"></span>
+                <span class="icon-spinner"></span>
+                <span class="icon-check"></span>
+                <span class="icon-x"></span>
+              </span>
+              <h3>Technical Expert</h3>
+            </div>
+            <span class="status-label" data-status>Waiting</span>
+          </header>
+          <div class="log-wrap">
+            <div class="log-placeholder" data-placeholder>
+              <span class="skel"></span>
+              <span class="skel skel-short"></span>
+              <span class="skel"></span>
+            </div>
+            <pre class="log is-empty" data-log></pre>
+          </div>
+        </article>
+
+        <article class="agent" data-agent="market" data-state="pending">
+          <header>
+            <div class="agent-title">
+              <span class="status-icon" aria-hidden="true">
+                <span class="icon-idle"></span>
+                <span class="icon-spinner"></span>
+                <span class="icon-check"></span>
+                <span class="icon-x"></span>
+              </span>
+              <h3>Market Expert</h3>
+            </div>
+            <span class="status-label" data-status>Waiting</span>
+          </header>
+          <div class="log-wrap">
+            <div class="log-placeholder" data-placeholder>
+              <span class="skel"></span>
+              <span class="skel skel-short"></span>
+              <span class="skel"></span>
+            </div>
+            <pre class="log is-empty" data-log></pre>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="results" class="panel results is-hidden" aria-live="polite">
+      <h2>Result</h2>
+      <dl class="scoreboard">
+        <div>
+          <dt>PoC Score</dt>
+          <dd id="poc-score"></dd>
+        </div>
+        <div>
+          <dt>Market Score</dt>
+          <dd id="market-score"></dd>
+        </div>
+        <div class="full">
+          <dt>Recommendation</dt>
+          <dd id="recommendation"></dd>
+        </div>
+        <div class="full">
+          <dt>Explanation</dt>
+          <dd id="explanation"></dd>
+        </div>
+      </dl>
+      <p class="note">Also written to <code>evaluations/latest.json</code> for the main <code>src/</code> viewer.</p>
+    </section>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      var warn = document.getElementById('boot-warning');
+      var okHost = location.protocol === 'http:' || location.protocol === 'https:';
+      if (!okHost) {
+        warn.classList.add('is-visible');
+        return;
+      }
+      var bg = getComputedStyle(document.body).backgroundImage;
+      if (!bg || bg === 'none') {
+        warn.classList.add('is-visible');
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -33,6 +33,10 @@ node scripts/write-ui-result.mjs --result path/to/result.json
 
 Open `src/index.html` in a browser and load `evaluations/latest.json` (file picker), or open the page after the orchestrator has written that file into place for local serving.
 
+### Optional: browser-driven bridge (Cursor SDK)
+
+`bridge/` is a separate local app (own `package.json`) that takes title/description in a form, runs Technical and Market Cursor agents in parallel, then calls the same scoring scripts. See `bridge/README.md`. Requires `CURSOR_API_KEY`. Not part of the vanilla `src/` viewer.
+
 ### 3. Verify scoring
 
 ```bash

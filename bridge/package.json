@@ -1,0 +1,17 @@
+{
+  "name": "v-score-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local UI bridge: HTML form → Cursor SDK experts → core scoring scripts",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@cursor/sdk": "^1.0.13"
+  }
+}
