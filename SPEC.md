@@ -7,7 +7,7 @@ The V-Score Validator helps users evaluate whether a business or product idea is
 * Technical Feasibility (PoC Score)
 * Market Viability (Market Score)
 
-Specialized Cursor agents analyze the idea and propose criterion ratings with reasoning. Deterministic scripts compute both scores and apply the V-Score recommendation matrix. A lightweight browser UI displays the final structured result.
+Specialized agents analyze the idea and propose criterion ratings with reasoning. Deterministic scripts compute both scores and apply the V-Score recommendation matrix. A lightweight browser UI displays the final structured result.
 
 This project is intentionally small in scope. The objective is a correct, maintainable agent/script split that demonstrates structured orchestration rather than technical complexity.
 
@@ -25,7 +25,7 @@ The system provides a repeatable workflow: expert agents reason about evidence; 
 
 # Goal
 
-Build a Cursor-native evaluation system that:
+Build an agent-skill evaluation system that:
 
 * Collects the idea title and description from the user (no manual criterion scores).
 * Uses specialized agents to analyze technical and market aspects and **infer** ratings with reasoning.
@@ -40,7 +40,7 @@ Build a Cursor-native evaluation system that:
 
 The system SHALL:
 
-* Run evaluation through Cursor Skills and specialized agents.
+* Run evaluation through Agent Skills (`.agents/skills/`) and the evaluate-idea entry command.
 * Ask the user for an idea name or description (minimum 20 characters of description).
 * Rate the idea on the eight official criteria (four PoC, four Market), each as an integer from 1 to 10.
 * Calculate both weighted scores with scripts (never with the LLM).
@@ -119,7 +119,7 @@ The system shall explain why the recommendation was selected (fixed explanation 
 
 ### FR-8
 
-The user can run multiple evaluations across Cursor sessions. Each run produces a structured artifact under `evaluations/`.
+The user can run multiple evaluations across sessions. Each run produces a structured artifact under `evaluations/`.
 
 ### FR-9
 
@@ -131,13 +131,16 @@ Agents retrieve prior knowledge via `scripts/memory-search.mjs` using keywords. 
 
 ---
 
-# Agents
+# Evaluation roles (skills)
 
-| Agent | Responsibility |
-|-------|----------------|
-| Technical Expert | PoC criteria: Technical Novelty, Defined Scope, Resource Accessibility, Measurable Outcome. Uses PoC resource checklist scripts. |
-| Market Expert | Market criteria: Pain Severity, Willingness to Pay, Market Size, Differentiation. |
-| Orchestrator | Coordinates the flow, reviews expert audits, resolves inconsistencies, runs scoring scripts, writes UI result, optional memory capture. |
+Specialized **roles** are implemented as Agent Skills under `.agents/skills/` (not Cursor/Claude subagent files):
+
+| Role | Skill |
+|------|-------|
+| Technical Expert | `technical-evaluation` — PoC criteria |
+| Market Expert | `market-evaluation` — Market criteria |
+| Orchestrator | `v-score-orchestrator` — coordinates flow, audits, runs scripts |
+| Scoring / matrix | `scoring-formulas`, `verdict-matrix`, `validate-rating` |
 
 ---
 
@@ -153,7 +156,7 @@ Agents retrieve prior knowledge via `scripts/memory-search.mjs` using keywords. 
 
 # Assumptions
 
-* Agent ratings are reasoned estimates from the provided text and user answers, not real market research or technical due diligence.
+* Agent ratings are reasoned estimates from the provided text, not real market research or technical due diligence.
 * Ratings are integers between 1 and 10 inclusive.
 * Calculations use the official weighting rules defined by the challenge.
 
@@ -163,7 +166,7 @@ Agents retrieve prior knowledge via `scripts/memory-search.mjs` using keywords. 
 
 The project is complete when:
 
-* The user can complete an evaluation via the Cursor workflow (`/evaluate-idea` or equivalent).
+* The user can complete an evaluation via `/evaluate-idea` or by asking the agent to follow `v-score-orchestrator`.
 * Technical and Market experts produce audited ratings with reasoning.
 * Scripts compute PoC, Market, and the recommendation correctly.
 * The UI displays the latest evaluation result.
@@ -175,4 +178,4 @@ The project is complete when:
 
 # Verification Strategy
 
-See `VERIFY.md`. Scripts must pass all-10s, all-1s, and the 65/64 boundary fixture. The orchestrated Cursor path must produce a UI-readable `evaluations/latest.json`.
+See `VERIFY.md`. Scripts must pass all-10s, all-1s, and the 65/64 boundary fixture. The orchestrated evaluation path must produce a UI-readable `evaluations/latest.json`.

@@ -4,7 +4,9 @@ description: Run a full V-Score evaluation for a business or product idea
 
 # Evaluate Idea
 
-You are running the V-Score Validator workflow. Follow `.cursor/skills/v-score-orchestrator/SKILL.md` and act as the **v-score-orchestrator**.
+You are running the V-Score Validator workflow. Follow `.agents/skills/v-score-orchestrator/SKILL.md`.
+
+Also load when needed: `technical-evaluation`, `market-evaluation`, `scoring-formulas`, `verdict-matrix`, `validate-rating`.
 
 ## User task
 

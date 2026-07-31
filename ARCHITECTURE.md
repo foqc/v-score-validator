@@ -2,7 +2,7 @@
 
 ## Overview
 
-V-Score Validator separates **AI reasoning** (Cursor Skills and specialized agents) from **deterministic calculation** (Node scripts) and **presentation** (a static browser UI).
+V-Score Validator separates **AI reasoning** (Agent Skills under `.agents/skills/`) from **deterministic calculation** (Node scripts) and **presentation** (a static browser UI).
 
 Agents propose criterion ratings with reasoning. Scripts validate ratings, compute weighted scores, and apply the recommendation matrix. The UI loads `evaluations/latest.json` and displays results. It never computes viability.
 
@@ -12,7 +12,7 @@ Agents propose criterion ratings with reasoning. Scripts validate ratings, compu
 
 | Layer | Stack |
 |-------|-------|
-| Agents / Skills | Cursor (`.cursor/agents`, `.cursor/skills`, `.cursor/commands`) |
+| Agents / Skills | Canonical under `.agents/skills/` and `.agents/commands/`; Claude uses `.claude/` symlinks |
 | Deterministic logic | Node.js ES modules, standard library only |
 | UI | HTML5, CSS3, vanilla ES6 |
 | Knowledge | Markdown docs + `memory-bank/index.json` |
@@ -24,14 +24,14 @@ No package manager, build tools, backend, or external dependencies.
 # High-Level Architecture
 
 ```
-User (Cursor)
+User (any agent host)
       │
       ▼
-Orchestrator (skill + agent)
+Orchestrator skill
       │
       ├── memory-search.mjs (optional keywords)
-      ├── Technical Expert → PoC audit + ratings
-      └── Market Expert → Market audit + ratings
+      ├── technical-evaluation skill → PoC audit + ratings
+      └── market-evaluation skill → Market audit + ratings
       │
       ▼
 ratings.json
@@ -52,10 +52,10 @@ src/ UI viewer
 
 ```
 /
-├── .cursor/
-│   ├── agents/
+├── .agents/
 │   ├── commands/
 │   └── skills/
+├── .claude/                  # symlinks → .agents/ (Claude Code)
 ├── scripts/
 │   ├── lib/scoring.mjs
 │   └── *.mjs
@@ -81,7 +81,7 @@ src/ UI viewer
 
 | Concern | Location | Rule |
 |---------|----------|------|
-| AI reasoning | `.cursor/skills`, `.cursor/agents` | Analyze evidence; propose 1–10 ratings; never invent formulas |
+| AI reasoning | `.agents/skills` | Analyze evidence; propose 1–10 ratings; never invent formulas |
 | Deterministic calc | `scripts/*.mjs` | Validate, weight, matrix only |
 | Coordination | Orchestrator skill/agent | Sequence, audit, inconsistency resolution |
 | Knowledge retrieval | `memory-bank` + `memory-search.mjs` | Keyword search; no full-bank dumps |

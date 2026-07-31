@@ -34,7 +34,7 @@ Expected: Verdict = `Validate Demand` (65 is High; 64 is Low)
 
 Given ratings from case 3, `run-evaluation.mjs` + `write-ui-result.mjs` must produce `evaluations/latest.json` with matching scores and verdict.
 
-## Manual Cursor workflow checklist
+## Manual evaluation workflow checklist
 
 - [ ] `/evaluate-idea` (or equivalent) asks for title and description
 - [ ] Description shorter than 20 characters is rejected before expert work
