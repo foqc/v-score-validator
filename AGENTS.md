@@ -16,7 +16,7 @@ Operating rules for agents working in this repo. Product requirements: `SPEC.md`
 
 * `.agents/skills/` — canonical skill logic (Cursor, Codex, Claude)
 * `.agents/commands/evaluate-idea.md` — entry command (Claude: `.claude/commands/` symlink)
-* `.codex/agents/` — canonical thin subagent wrappers (`technical-expert`, `market-expert`, `v-score-orchestrator`)
+* `.codex/agents/` — canonical thin subagent wrappers (`technical-expert`, `market-expert`)
 * `.cursor/agents/` / `.claude/agents/` — symlinks → `.codex/agents/`
 * `.claude/skills/` / `.claude/commands/` — symlinks → `.agents/`
 * `scripts/` — deterministic validation, scoring, recommendation, memory, verify
@@ -43,7 +43,8 @@ Role **logic** lives in skills. Subagent files are thin spawn wrappers for isola
 |-------|-------------|---------|
 | `technical-expert` | `technical-evaluation` | Isolated PoC ratings |
 | `market-expert` | `market-evaluation` | Isolated Market ratings |
-| `v-score-orchestrator` | `v-score-orchestrator` | Coordinate + spawn experts |
+
+Orchestration stays a **skill** (`v-score-orchestrator`) plus `/evaluate-idea` — not a spawnable agent.
 
 ## Evaluation workflow (summary)
 

@@ -8,7 +8,7 @@ Agents reason about technical feasibility and market viability. Node scripts com
 
 * **Technical** and **Market** evaluation skills produce criterion ratings with reasoning.
 * Optional **subagent wrappers** (`technical-expert`, `market-expert`) isolate those roles when Cursor/Codex/Claude can spawn them.
-* **Orchestrator** skill coordinates the run, audits outputs, and writes the UI result.
+* **Orchestrator** skill + `/evaluate-idea` coordinate the run, audit outputs, and write the UI result.
 * Weighted **PoC** and **Market** scores via scripts (official formulas; threshold 65 inclusive).
 * Plain-language **recommendation** from the decision matrix.
 * **Memory bank** with keyword search for prior evaluations and learnings (supplemental only).

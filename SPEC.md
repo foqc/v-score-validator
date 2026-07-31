@@ -139,7 +139,7 @@ Specialized **role logic** lives in Agent Skills under `.agents/skills/`. Thin *
 |------|-------|------------------|
 | Technical Expert | `technical-evaluation` — PoC criteria | `technical-expert` |
 | Market Expert | `market-evaluation` — Market criteria | `market-expert` |
-| Orchestrator | `v-score-orchestrator` — coordinates flow, audits, runs scripts | `v-score-orchestrator` |
+| Orchestrator | `v-score-orchestrator` — coordinates flow, audits, runs scripts | (skill + `/evaluate-idea` only) |
 | Scoring / matrix | `scoring-formulas`, `verdict-matrix`, `validate-rating` | (skills only) |
 
 ---
