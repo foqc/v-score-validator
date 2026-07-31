@@ -1,0 +1,10 @@
+{
+  "id": "fixture-boundary",
+  "ideaTitle": "Boundary fixture",
+  "ideaDescription": "Synthetic ratings for VERIFY boundary case 65/64.",
+  "poc": { "novelty": 7, "scope": 7, "resources": 5, "outcome": 6 },
+  "market": { "pain": 8, "pay": 6, "size": 5, "diff": 4 },
+  "technicalSummary": "PoC scores land exactly on the inclusive High threshold.",
+  "marketSummary": "Market sits one point below threshold.",
+  "insights": ["Example insight: thin pay evidence → rate pay conservatively."]
+}

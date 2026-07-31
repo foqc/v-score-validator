@@ -2,87 +2,49 @@
 
 ## Overview
 
-This project is implemented as a simple client-side web application.
+V-Score Validator separates **AI reasoning** (Cursor Skills and specialized agents) from **deterministic calculation** (Node scripts) and **presentation** (a static browser UI).
 
-The entire application runs inside the browser using only HTML5, CSS3 and Vanilla JavaScript (ES6). Completed evaluations are persisted with the browser's `localStorage` API. No server, build tools or external dependencies are required.
-
-The architecture prioritizes simplicity, readability, maintainability and separation of responsibilities.
+Agents propose criterion ratings with reasoning. Scripts validate ratings, compute weighted scores, and apply the recommendation matrix. The UI loads `evaluations/latest.json` and displays results. It never computes viability.
 
 ---
 
 # Technology Stack
 
-## Frontend
+| Layer | Stack |
+|-------|-------|
+| Agents / Skills | Cursor (`.cursor/agents`, `.cursor/skills`, `.cursor/commands`) |
+| Deterministic logic | Node.js ES modules, standard library only |
+| UI | HTML5, CSS3, vanilla ES6 |
+| Knowledge | Markdown docs + `memory-bank/index.json` |
 
-* HTML5
-* CSS3
-* Vanilla JavaScript (ES6)
-
-## Backend
-
-None
-
-## Database
-
-None
-
-## Browser Storage
-
-`localStorage`, containing JSON arrays under:
-
-* `v-score-evaluations` for completed evaluations
-* `v-score-learning-rules` for generated heuristic rules
-
-## Build Tools
-
-None
-
-## Package Manager
-
-None
-
-## External Libraries
-
-None
+No package manager, build tools, backend, or external dependencies.
 
 ---
 
 # High-Level Architecture
 
 ```
-User
-   │
-   ▼
-src/index.html
-   │
-   ▼
-User Interface
-   │
-   ▼
-Input Validation
-   │
-   ▼
-Automatic Idea Rater
-   │
-   ▼
-Score Calculator
-   │
-   ▼
-Recommendation Engine
-   │
-   ▼
-DOM Renderer
+User (Cursor)
+      │
+      ▼
+Orchestrator (skill + agent)
+      │
+      ├── memory-search.mjs (optional keywords)
+      ├── Technical Expert → PoC audit + ratings
+      └── Market Expert → Market audit + ratings
+      │
+      ▼
+ratings.json
+      │
+      ▼
+run-evaluation.mjs / recommend.mjs
+      │
+      ▼
+evaluations/latest.json
+      │
+      ▼
+src/ UI viewer
 ```
-
-The UI collects an idea title and description.
-
-The idea rater derives five transparent text-based estimates and maps them to the existing PoC and Market criteria.
-
-The calculator computes both weighted scores from those mapped criteria.
-
-The recommendation engine determines the final verdict.
-
-The renderer updates the page with the results.
 
 ---
 
@@ -90,332 +52,155 @@ The renderer updates the page with the results.
 
 ```
 /
+├── .cursor/
+│   ├── agents/
+│   ├── commands/
+│   └── skills/
+├── scripts/
+│   ├── lib/scoring.mjs
+│   └── *.mjs
+├── evaluations/
+├── memory-bank/
+│   ├── index.json
+│   ├── evaluations/
+│   └── learnings/
 ├── src/
 │   ├── index.html
-│   ├── css/
-│   │   └── styles.css
-│   └── js/
-│       ├── idea-rater.js
-│       ├── learning.js
-│       ├── memory.js
-│       └── script.js
-│
+│   ├── css/styles.css
+│   └── js/viewer.js
 ├── SPEC.md
 ├── ARCHITECTURE.md
+├── AGENTS.md
 ├── VERIFY.md
-│
-└── prompts/
+└── README.md
 ```
+
+---
+
+# Separation of Concerns
+
+| Concern | Location | Rule |
+|---------|----------|------|
+| AI reasoning | `.cursor/skills`, `.cursor/agents` | Analyze evidence; propose 1–10 ratings; never invent formulas |
+| Deterministic calc | `scripts/*.mjs` | Validate, weight, matrix only |
+| Coordination | Orchestrator skill/agent | Sequence, audit, inconsistency resolution |
+| Knowledge retrieval | `memory-bank` + `memory-search.mjs` | Keyword search; no full-bank dumps |
+| Final recommendation | `recommend.mjs` + verdict-matrix skill | Matrix only; fixed explanations |
+| Presentation | `src/` | Render JSON; no scoring |
+
+---
+
+# Official Criteria and Weights
+
+### PoC
+
+| Criterion | Key | Weight |
+|-----------|-----|--------|
+| Technical Novelty | `novelty` | ×3 |
+| Defined Scope | `scope` | ×4 |
+| Resource Accessibility | `resources` | ×2 |
+| Measurable Outcome | `outcome` | ×1 |
+
+### Market
+
+| Criterion | Key | Weight |
+|-----------|-----|--------|
+| Pain Severity | `pain` | ×4 |
+| Willingness to Pay | `pay` | ×3 |
+| Market Size | `size` | ×2 |
+| Differentiation | `diff` | ×1 |
+
+```
+PoC    = (novelty×3) + (scope×4) + (resources×2) + (outcome×1)
+Market = (pain×4) + (pay×3) + (size×2) + (diff×1)
+```
+
+High if score ≥ 65 (inclusive).
 
 ---
 
 # Component Responsibilities
 
-## src/index.html
+## Orchestrator
 
-Responsible for:
+* Validates inputs (title, description length).
+* Searches memory bank when useful.
+* Delegates to Technical and Market experts.
+* Reviews audits; resolves inconsistent ratings.
+* Writes `ratings.json` and invokes scoring scripts.
+* Writes UI result; optionally captures learnings.
 
-* Page layout
-* User inputs
-* Idea submission form
-* Result section
-* Button actions
+## Technical Expert
 
-Contains no business logic.
+* Evaluates PoC criteria with reasoning.
+* Runs `poc-resources.mjs` for the resource checklist.
+* Collects user resource availability; uses `score-item.mjs` for Resources.
+* Writes `evaluations/<id>/technical.md`. Does not compute weighted PoC.
 
----
+## Market Expert
 
-## src/css/styles.css
+* Evaluates Market criteria with reasoning.
+* Writes `evaluations/<id>/market.md`. Does not compute weighted Market.
 
-Responsible for:
+## Scripts
 
-* Layout
-* Typography
-* Responsive design
-* Visual feedback
+Pure CLI entry points around `scripts/lib/scoring.mjs`:
 
-Contains no application logic.
+* `validate-rating.mjs` — accept integer 1–10 or reject
+* `poc-resources.mjs` — print resource checklist
+* `score-item.mjs` — map answers to a validated rating
+* `compute-poc.mjs` / `compute-market.mjs` — weighted scores
+* `recommend.mjs` — matrix verdict + explanation
+* `run-evaluation.mjs` — full score + verdict from ratings JSON
+* `write-ui-result.mjs` — write `evaluations/latest.json`
+* `memory-search.mjs` / `memory-capture.mjs` — knowledge index
+* `verify.mjs` — edge-case suite
 
----
+## UI Viewer
 
-## src/js/script.js
-
-Responsible for:
-
-* Reading user input
-* Input validation
-* Score calculations
-* Recommendation logic
-* Rendering results
-* Event handling
-
-Contains the evaluation workflow and UI logic.
-
----
-
-## src/js/idea-rater.js
-
-Responsible for:
-
-* Analyzing the submitted description with deterministic, normalized text signals
-* Generating quality, feasibility, impact, originality, and clarity ratings
-* Mapping generated ratings to the official PoC and Market criteria
-
-The ratings are estimates of description quality and specificity, not real-world validation.
+* Loads `evaluations/latest.json` (file input or embedded path note for local open).
+* Displays idea metadata, eight ratings, PoC/Market scores, verdict, explanation, optional insights.
+* Contains no scoring logic.
 
 ---
 
-## src/js/memory.js
+# Evaluation Artifact Shape
 
-Responsible for:
+`evaluations/latest.json` (and per-run copies):
 
-* Initializing browser storage
-* Reading stored evaluations
-* Appending completed evaluations
-* Repairing malformed stored data
-
-Contains no scoring or DOM rendering logic.
-
----
-
-## src/js/learning.js
-
-Responsible for:
-
-* Defining transparent heuristic patterns
-* Counting repeated patterns in evaluation history
-* Persisting generated rules
-* Matching evaluations against existing rules
-
-Contains no recommendation-matrix or DOM rendering logic.
-
----
-
-# Logical Modules
-
-The JavaScript is split by responsibility: `script.js` handles the workflow, `idea-rater.js` generates ratings, `memory.js` stores evaluations, and `learning.js` generates and matches heuristic rules.
-
-## Input Module
-
-Responsibilities:
-
-* Read form values
-* Require a title
-* Require a description of at least 20 characters
-
----
-
-## Automatic Idea Rater
-
-Responsibilities:
-
-* Tokenize the idea description
-* Measure transparent keyword and specificity signals as normalized strengths from 0 to 1
-* Map each signal strength onto five integer ratings from 1 to 10
-* Return an overall score from 10 to 100
-* Map the ratings to existing scoring criteria
-
-Signals are normalized so that ordinary one-sentence descriptions and richly detailed ones land at different points on the scale, keeping the rating distribution wide enough for the learning module to detect patterns. The same description always produces the same ratings.
-
----
-
-## PoC Calculator
-
-Responsibilities:
-
-* Calculate weighted PoC score
-* Return score between 10 and 100
-
-Formula:
-
-PoC =
-(Novelty × 3)
-+
-(Scope × 4)
-+
-(Resources × 2)
-+
-(Outcome × 1)
-
----
-
-## Market Calculator
-
-Responsibilities:
-
-* Calculate weighted Market score
-* Return score between 10 and 100
-
-Formula:
-
-Market =
-(Pain × 4)
-+
-(Pay × 3)
-+
-(Size × 2)
-+
-(Differentiation × 1)
-
----
-
-## Recommendation Engine
-
-Responsibilities:
-
-* Compare both scores
-* Apply the official decision matrix
-* Return:
-
-  * Verdict
-  * Short explanation
-
-No DOM manipulation should occur here.
-
----
-
-## UI Renderer
-
-Responsibilities:
-
-* Display scores
-* Display recommendation
-* Display explanation
-* Display validation errors
-
-This module should never perform calculations.
-
----
-
-## Memory Module
-
-Responsibilities:
-
-* Initialize browser storage as a valid JSON array
-* Preserve existing evaluation records
-* Append each successful evaluation
-* Repair malformed stored data before saving new records
-
----
-
-## Learning Module
-
-Responsibilities:
-
-* Generate a rule only after its pattern occurs at least twice
-* Persist rules as a valid JSON array
-* Reuse existing rules across sessions
-* Return matching rules as supplemental insights
-
-Rule thresholds are calibrated against the rating distribution the idea rater actually produces, so each pattern describes a minority of evaluations. A condition that no description can trigger, or that every description triggers, carries no information and is treated as a defect. Rules never modify the official recommendation.
-
----
-
-# Data Flow
-
+```json
+{
+  "id": "2026-07-30-example",
+  "timestamp": "ISO-8601",
+  "ideaTitle": "...",
+  "ideaDescription": "...",
+  "pocCriteria": { "novelty": 7, "scope": 7, "resources": 5, "outcome": 6 },
+  "marketCriteria": { "pain": 8, "pay": 6, "size": 5, "diff": 4 },
+  "pocScore": 65,
+  "marketScore": 64,
+  "recommendation": "Validate Demand",
+  "explanation": "...",
+  "technicalSummary": "...",
+  "marketSummary": "...",
+  "insights": []
+}
 ```
-User Input
-      │
-      ▼
-Validation
-      │
-      ▼
-Automatic Idea Rater
-      │
-      ▼
-PoC Calculator
-      │
-      ▼
-Market Calculator
-      │
-      ▼
-Recommendation Engine
-      │
-      ▼
-Persist Evaluation
-      │
-      ▼
-Generate / Match Rules
-      │
-      ▼
-Render Results
-```
-
-Each stage has a single responsibility.
 
 ---
 
 # Design Principles
 
-The implementation should follow these principles:
-
-* Single Responsibility Principle
-* Separation of Concerns
-* Small reusable functions
-* Pure calculation functions
-* No duplicated logic
-* Keep the code simple
-* Prefer readability over clever solutions
-
----
-
-# Error Handling
-
-The application should validate:
-
-* A missing idea title
-* An idea description shorter than 20 characters
-
-When validation fails:
-
-* Show a user-friendly message.
-* Do not rate the idea, calculate scores, or store a record.
-
----
-
-# Performance
-
-Expected response time:
-
-* Score calculation: instantaneous
-* No asynchronous operations
-* No network requests
-
----
-
-# Maintainability
-
-Future enhancements should be easy to add without changing the core calculation logic.
-
-Examples:
-
-* Exporting results
-* AI-assisted scoring
-* Charts and visualizations
-
-These features should be added as separate modules without modifying the existing calculators.
-
----
-
-# Coding Standards
-
-* Use modern ES6 syntax.
-* Use const by default.
-* Use let only when reassignment is required.
-* Use descriptive variable and function names.
-* Prefer pure functions.
-* Keep functions focused on a single responsibility.
-* Avoid global variables whenever possible.
-* Keep the code clean and self-explanatory.
+* Single responsibility per module.
+* Calculators never touch the DOM; renderers never calculate.
+* Agents never invent weights, thresholds, or verdicts.
+* Prefer the standard library and plain files over frameworks.
+* Memory and learnings are supplemental only.
 
 ---
 
 # Definition of Architecture Success
 
-The architecture is considered successful when:
-
-* The UI contains no business logic.
-* Calculations are isolated from rendering.
-* Every logical module has a single responsibility.
-* The application can be understood without additional documentation.
-* New features can be added with minimal impact on existing code.
+* UI contains no viability math.
+* All formulas and the matrix live only in scripts (plus skill documentation that mirrors them).
+* Three agents only: technical, market, orchestrator.
+* Memory is retrieved by keyword search, not by loading the whole bank.

@@ -1,76 +1,52 @@
 # V-Score Validator — Verification
 
-The app accepts an idea title and description, generates ratings automatically, and applies the unchanged official formulas and 65-point recommendation matrix.
+Agents propose ratings; scripts compute scores and the recommendation. The browser UI only displays `evaluations/latest.json`.
 
-## Deterministic fixture
+## Script edge cases (`node scripts/verify.mjs`)
 
-Description:
+### 1. All 10s
 
-> A web tool for small retail teams that automates inventory alerts, reducing stockouts and manual spreadsheet work using local sales data.
+Every criterion = 10.
 
-Expected automatic ratings:
+Expected: PoC = 100, Market = 100, Verdict = `Go / Full Speed Ahead`
 
-| Dimension | Rating |
-|-----------|-------:|
-| Quality | 8 |
-| Feasibility | 7 |
-| Impact | 5 |
-| Originality | 6 |
-| Clarity | 8 |
-| Overall automatic score | 68 / 100 |
+### 2. All 1s
 
-Expected mapped criteria:
+Every criterion = 1.
 
-- PoC: Novelty 6, Scope 8, Resources 7, Outcome 7
-- Market: Pain 5, Pay 8, Size 7, Differentiation 6
+Expected: PoC = 10, Market = 10, Verdict = `Reframe or Shelve`
 
-Expected weighted results:
+### 3. Boundary 65 / 64
 
-- PoC = (6×3) + (8×4) + (7×2) + (7×1) = **71**
-- Market = (5×4) + (8×3) + (7×2) + (6×1) = **64**
-- Recommendation = **Validate Demand**
+PoC ratings: Novelty=7, Scope=7, Resources=5, Outcome=6 → PoC = 65  
+Market ratings: Pain=8, Pay=6, Size=5, Diff=4 → Market = 64  
 
-Running the same description repeatedly must produce the exact same ratings and scores.
+Expected: Verdict = `Validate Demand` (65 is High; 64 is Low)
 
-## Official matrix boundaries
-
-The recommendation engine remains unchanged:
+### Official matrix boundaries
 
 - 65 / 65 → Go / Full Speed Ahead
 - 64 / 65 → De-risk First
 - 65 / 64 → Validate Demand
 - 64 / 64 → Reframe or Shelve
 
-## Manual checklist
+## Fixture: write UI result
 
-- [ ] No manual rating fields are displayed
-- [ ] Empty title is rejected
-- [ ] Description shorter than 20 characters is rejected
-- [ ] A valid description displays the overall score and five ratings
-- [ ] The deterministic fixture produces 68 overall, 71 PoC, and 64 Market
-- [ ] The result states that automatic ratings are text-based estimates
-- [ ] Reset clears inputs and generated results
-- [ ] Repeating the same input produces identical scores
-- [ ] Each successful evaluation stores the description and generated ratings
-- [ ] Invalid evaluations do not create memory records
-- [ ] Existing memory and learning rules persist after reload
-- [ ] Matching learned insights never modify the official recommendation
+Given ratings from case 3, `run-evaluation.mjs` + `write-ui-result.mjs` must produce `evaluations/latest.json` with matching scores and verdict.
 
-## Learning rules
+## Manual Cursor workflow checklist
 
-Rules are generated after a pattern appears in **two** stored evaluations, and persist in `v-score-learning-rules`.
+- [ ] `/evaluate-idea` (or equivalent) asks for title and description
+- [ ] Description shorter than 20 characters is rejected before expert work
+- [ ] Technical Expert runs `poc-resources.mjs` and collects resource answers
+- [ ] Market Expert produces four Market ratings with reasoning
+- [ ] Orchestrator runs scripts for scores and verdict (LLM does not invent totals)
+- [ ] `evaluations/latest.json` is written
+- [ ] Opening `src/index.html` and loading the result shows PoC, Market, recommendation, and explanation
+- [ ] Matching memory-bank insights never change the matrix verdict
 
-| Rule | Condition |
-|------|-----------|
-| `vague-description` | Clarity ≤ 4 |
-| `unclear-feasibility` | Feasibility ≤ 3 |
-| `impact-not-stated` | Impact ≤ 3 |
-| `low-differentiation` | Originality ≤ 4 |
-| `low-poc` | PoC < 50 |
-| `well-rounded` | Every dimension ≥ 6 |
+## Memory bank
 
-Thresholds must stay inside the rater's reachable range (PoC ≈ 21–85, Market ≈ 17–97) and must describe a minority of evaluations. A rule that no description can trigger, or that every description triggers, is a defect.
-
-- [ ] Evaluating a vague idea twice (for example `Something that we might build later for people maybe`) generates `vague-description`, `unclear-feasibility`, `impact-not-stated`, `low-differentiation`, and `low-poc`
-- [ ] Evaluating a detailed idea twice (audience, problem, implementation, and measurable outcome) generates `well-rounded`
-- [ ] A single matching evaluation does not generate a rule
+- [ ] `memory-search.mjs --keywords foo,bar` returns only index entries whose keywords intersect
+- [ ] Agents call the search script instead of reading the entire `memory-bank/` tree
+- [ ] `memory-capture.mjs` appends a document and updates `index.json`

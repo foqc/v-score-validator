@@ -11,74 +11,59 @@
     <header class="app-header">
       <h1>V-Score Validator</h1>
       <p class="app-intro">
-        Evaluate a business or product idea across technical feasibility (PoC) and market viability.
+        Displays the latest evaluation produced by Cursor agents and deterministic scripts.
+        Run <code>/evaluate-idea</code> in Cursor, then load <code>evaluations/latest.json</code> here.
       </p>
     </header>
 
-    <form id="evaluation-form" class="evaluation-form" novalidate>
-      <section class="form-section">
-        <h2>Idea</h2>
-        <p class="section-note">
-          Describe the problem, target users, proposed solution, expected impact, and how it could be built.
-          Ratings are generated automatically from your description.
-        </p>
-
-        <div class="idea-fields">
-          <div class="field">
-            <label for="idea-title">Idea title</label>
-            <input
-              type="text"
-              id="idea-title"
-              name="idea-title"
-              autocomplete="off"
-              placeholder="Enter your idea name"
-            >
-          </div>
-
-          <div class="field">
-            <label for="idea-description">Idea description</label>
-            <textarea
-              id="idea-description"
-              name="idea-description"
-              rows="7"
-              minlength="20"
-              placeholder="Example: A web tool for small retail teams that automates inventory alerts, reducing stockouts and manual spreadsheet work."
-            ></textarea>
-          </div>
-        </div>
-      </section>
-
-      <div class="form-actions">
-        <button type="submit" id="btn-evaluate">Evaluate</button>
-        <button type="reset" id="btn-reset">Reset</button>
+    <section class="form-section load-section">
+      <h2>Load result</h2>
+      <p class="section-note">
+        Choose the JSON file written by <code>write-ui-result.mjs</code>
+        (usually <code>evaluations/latest.json</code>).
+      </p>
+      <div class="field">
+        <label for="result-file">Evaluation result (JSON)</label>
+        <input type="file" id="result-file" accept="application/json,.json">
       </div>
-
+      <div class="form-actions">
+        <button type="button" id="btn-clear">Clear</button>
+      </div>
       <p id="error-message" class="error-message" role="alert" aria-live="polite"></p>
-    </form>
+    </section>
 
     <section id="results" class="results is-hidden" aria-live="polite">
       <h2>Results</h2>
 
       <dl class="results-grid">
-        <div class="result-item result-item--full auto-rating">
-          <dt>Automatically generated idea score</dt>
+        <div class="result-item result-item--full">
+          <dt>Idea</dt>
           <dd>
-            <strong id="auto-score"></strong>
-            <p class="score-note">
-              Text-based estimate only; real feasibility and market impact still require validation.
-            </p>
+            <strong id="idea-title"></strong>
+            <p id="idea-description" class="score-note"></p>
           </dd>
         </div>
 
         <div class="result-item result-item--full">
-          <dt>Rating breakdown (1–10)</dt>
+          <dt>PoC criteria (1–10)</dt>
           <dd>
             <dl class="dimension-grid">
-              <div><dt>Quality</dt><dd id="rating-quality"></dd></div>
-              <div><dt>Feasibility</dt><dd id="rating-feasibility"></dd></div>
-              <div><dt>Impact</dt><dd id="rating-impact"></dd></div>
-              <div><dt>Originality</dt><dd id="rating-originality"></dd></div>
-              <div><dt>Clarity</dt><dd id="rating-clarity"></dd></div>
+              <div><dt>Novelty</dt><dd id="poc-novelty"></dd></div>
+              <div><dt>Scope</dt><dd id="poc-scope"></dd></div>
+              <div><dt>Resources</dt><dd id="poc-resources"></dd></div>
+              <div><dt>Outcome</dt><dd id="poc-outcome"></dd></div>
+            </dl>
+          </dd>
+        </div>
+
+        <div class="result-item result-item--full">
+          <dt>Market criteria (1–10)</dt>
+          <dd>
+            <dl class="dimension-grid">
+              <div><dt>Pain</dt><dd id="market-pain"></dd></div>
+              <div><dt>Willingness to pay</dt><dd id="market-pay"></dd></div>
+              <div><dt>Market size</dt><dd id="market-size"></dd></div>
+              <div><dt>Differentiation</dt><dd id="market-diff"></dd></div>
             </dl>
           </dd>
         </div>
@@ -103,19 +88,32 @@
           <dd id="explanation"></dd>
         </div>
 
+        <div id="expert-summaries" class="result-item result-item--full is-hidden">
+          <dt>Expert summaries</dt>
+          <dd>
+            <p id="technical-summary" class="score-note"></p>
+            <p id="market-summary" class="score-note"></p>
+          </dd>
+        </div>
+
         <div id="learning-insights" class="result-item result-item--full insight is-hidden">
           <dt>Learned insights</dt>
           <dd>
             <ul id="insight-list"></ul>
           </dd>
         </div>
+
+        <div class="result-item result-item--full">
+          <dt>Disclaimer</dt>
+          <dd class="score-note">
+            Ratings are reasoned estimates from agents, not real market research or technical due diligence.
+            Scores and the recommendation come from deterministic scripts.
+          </dd>
+        </div>
       </dl>
     </section>
   </main>
 
-  <script src="js/memory.js"></script>
-  <script src="js/learning.js"></script>
-  <script src="js/idea-rater.js"></script>
-  <script src="js/script.js"></script>
+  <script src="js/viewer.js"></script>
 </body>
 </html>

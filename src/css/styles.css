@@ -37,9 +37,21 @@ body {
   text-wrap: pretty;
 }
 
-.evaluation-form {
-  display: grid;
-  gap: 1.25rem;
+.load-section code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875em;
+}
+
+.app-intro code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875em;
+}
+
+.field input[type="file"] {
+  width: 100%;
+  padding: 0.5rem 0;
+  font: inherit;
+  color: inherit;
 }
 
 .form-section {
@@ -120,18 +132,7 @@ body {
   outline-offset: 2px;
 }
 
-#btn-evaluate {
-  border-color: #2f6f9f;
-  background-color: #2f6f9f;
-  color: #ffffff;
-}
-
-#btn-evaluate:hover {
-  background-color: #255a80;
-  border-color: #255a80;
-}
-
-#btn-reset:hover {
+#btn-clear:hover {
   background-color: #eef2f6;
 }
 
@@ -182,19 +183,6 @@ body {
   margin: 0;
   font-size: 1rem;
   text-wrap: pretty;
-}
-
-.auto-rating {
-  padding: 0.875rem 1rem;
-  border-left: 0.25rem solid #2f6f9f;
-  background-color: #eef5fa;
-}
-
-#auto-score {
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1.1;
-  font-variant-numeric: tabular-nums;
 }
 
 .score-note {
