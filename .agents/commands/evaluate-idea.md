@@ -8,6 +8,8 @@ You are running the V-Score Validator workflow. Follow `.agents/skills/v-score-o
 
 Also load when needed: `technical-evaluation`, `market-evaluation`, `scoring-formulas`, `verdict-matrix`, `validate-rating`.
 
+Prefer spawning project subagents `technical-expert` and `market-expert` in parallel (isolated context). Fallback: apply the matching skills inline if the host cannot spawn custom subagents.
+
 ## User task
 
 $ARGUMENTS
@@ -20,8 +22,8 @@ $ARGUMENTS
    * Do **not** ask the user for criterion scores or resource checklists.
 2. Create `evaluations/<id>/`.
 3. Optionally search the memory bank with keywords from the idea.
-4. Run the Technical Expert flow — **infer** PoC ratings from the idea text.
-5. Run the Market Expert flow — **infer** Market ratings from the idea text.
+4. Spawn `technical-expert` — **infer** PoC ratings from the idea text (or apply `technical-evaluation` inline).
+5. Spawn `market-expert` in parallel — **infer** Market ratings (or apply `market-evaluation` inline). Do not share Technical ratings with Market.
 6. Audit ratings; write `evaluations/<id>/ratings.json`.
 7. Run:
 

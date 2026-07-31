@@ -14,15 +14,17 @@ Operating rules for agents working in this repo. Product requirements: `SPEC.md`
 
 ## Structure
 
-* `.agents/skills/` — canonical skills (Cursor, Codex; Claude via `.claude/skills/` symlinks)
+* `.agents/skills/` — canonical skill logic (Cursor, Codex, Claude)
 * `.agents/commands/evaluate-idea.md` — entry command (Claude: `.claude/commands/` symlink)
+* `.codex/agents/` — canonical thin subagent wrappers (`technical-expert`, `market-expert`, `v-score-orchestrator`)
+* `.cursor/agents/` / `.claude/agents/` — symlinks → `.codex/agents/`
 * `.claude/skills/` / `.claude/commands/` — symlinks → `.agents/`
 * `scripts/` — deterministic validation, scoring, recommendation, memory, verify
 * `evaluations/` — run artifacts and `latest.json` for the UI
 * `memory-bank/` — keyword-indexed knowledge documents
 * `src/` — UI viewer only (`viewer.js` loads result JSON)
 
-Roles are skills only (Downloads-style). No `.cursor/` directory.
+Role **logic** lives in skills. Subagent files are thin spawn wrappers for isolated Technical/Market runs when the host supports them.
 
 ## Skills map
 
@@ -35,11 +37,19 @@ Roles are skills only (Downloads-style). No `.cursor/` directory.
 | `verdict-matrix` | Official recommendation matrix (use scripts) |
 | `validate-rating` | Validate 1–10 integers |
 
+## Subagents map
+
+| Agent | Wraps skill | Purpose |
+|-------|-------------|---------|
+| `technical-expert` | `technical-evaluation` | Isolated PoC ratings |
+| `market-expert` | `market-evaluation` | Isolated Market ratings |
+| `v-score-orchestrator` | `v-score-orchestrator` | Coordinate + spawn experts |
+
 ## Evaluation workflow (summary)
 
 1. Load `v-score-orchestrator`; collect title + description only; optional `memory-search.mjs`.
-2. Apply `technical-evaluation` — infer PoC criteria.
-3. Apply `market-evaluation` — infer Market criteria.
+2. Spawn `technical-expert` (or apply `technical-evaluation` inline) — infer PoC criteria.
+3. Spawn `market-expert` in parallel (or apply `market-evaluation` inline) — infer Market criteria.
 4. Audit, write `ratings.json`, run `run-evaluation.mjs` and `write-ui-result.mjs`.
 5. User views `src/index.html` with the latest result.
 6. Optional: `memory-capture.mjs` for self-learning summaries.

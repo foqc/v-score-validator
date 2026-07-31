@@ -12,7 +12,7 @@ Agents propose criterion ratings with reasoning. Scripts validate ratings, compu
 
 | Layer | Stack |
 |-------|-------|
-| Agents / Skills | Canonical under `.agents/skills/` and `.agents/commands/`; Claude uses `.claude/` symlinks |
+| Agents / Skills | Skills under `.agents/skills/`; spawn wrappers under `.codex/agents/` (symlinked to `.cursor/agents/` and `.claude/agents/`) |
 | Deterministic logic | Node.js ES modules, standard library only |
 | UI | HTML5, CSS3, vanilla ES6 |
 | Knowledge | Markdown docs + `memory-bank/index.json` |
@@ -27,12 +27,13 @@ No package manager, build tools, backend, or external dependencies.
 User (any agent host)
       │
       ▼
-Orchestrator skill
+Orchestrator skill / agent
       │
       ├── memory-search.mjs (optional keywords)
-      ├── technical-evaluation skill → PoC audit + ratings
-      └── market-evaluation skill → Market audit + ratings
-      │
+      ├── technical-expert subagent (skill: technical-evaluation) → PoC
+      └── market-expert subagent (skill: market-evaluation) → Market
+            │  (parallel when host supports custom subagents;
+            │   else skills applied inline)
       ▼
 ratings.json
       │
@@ -54,8 +55,10 @@ src/ UI viewer
 /
 ├── .agents/
 │   ├── commands/
-│   └── skills/
-├── .claude/                  # symlinks → .agents/ (Claude Code)
+│   └── skills/               # canonical role logic
+├── .codex/agents/            # canonical thin subagent wrappers
+├── .cursor/agents/           # symlinks → .codex/agents/
+├── .claude/                  # skills/commands → .agents/; agents → .codex/agents/
 ├── scripts/
 │   ├── lib/scoring.mjs
 │   └── *.mjs
@@ -82,8 +85,9 @@ src/ UI viewer
 | Concern | Location | Rule |
 |---------|----------|------|
 | AI reasoning | `.agents/skills` | Analyze evidence; propose 1–10 ratings; never invent formulas |
+| Isolated expert runs | `.codex/agents/` (+ Cursor/Claude symlinks) | Thin wrappers; spawn Technical/Market with separate context |
 | Deterministic calc | `scripts/*.mjs` | Validate, weight, matrix only |
-| Coordination | Orchestrator skill/agent | Sequence, audit, inconsistency resolution |
+| Coordination | Orchestrator skill/agent | Sequence, spawn experts, audit, inconsistency resolution |
 | Knowledge retrieval | `memory-bank` + `memory-search.mjs` | Keyword search; no full-bank dumps |
 | Final recommendation | `recommend.mjs` + verdict-matrix skill | Matrix only; fixed explanations |
 | Presentation | `src/` | Render JSON; no scoring |
@@ -125,21 +129,21 @@ High if score ≥ 65 (inclusive).
 
 * Validates inputs (title, description length).
 * Searches memory bank when useful.
-* Delegates to Technical and Market experts.
+* Prefers spawning `technical-expert` and `market-expert` subagents in parallel; falls back to inline skills.
 * Reviews audits; resolves inconsistent ratings.
 * Writes `ratings.json` and invokes scoring scripts.
 * Writes UI result; optionally captures learnings.
 
 ## Technical Expert
 
-* Evaluates PoC criteria with reasoning.
-* Runs `poc-resources.mjs` for the resource checklist.
-* Collects user resource availability; uses `score-item.mjs` for Resources.
+* Evaluates PoC criteria with reasoning (skill: `technical-evaluation`).
+* Infers ratings from the idea text; may use `poc-resources.mjs` + `score-item.mjs` as a private checklist.
 * Writes `evaluations/<id>/technical.md`. Does not compute weighted PoC.
 
 ## Market Expert
 
-* Evaluates Market criteria with reasoning.
+* Evaluates Market criteria with reasoning (skill: `market-evaluation`).
+* Infers ratings from the idea text; does not ask the user for scores.
 * Writes `evaluations/<id>/market.md`. Does not compute weighted Market.
 
 ## Scripts

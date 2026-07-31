@@ -131,16 +131,16 @@ Agents retrieve prior knowledge via `scripts/memory-search.mjs` using keywords. 
 
 ---
 
-# Evaluation roles (skills)
+# Evaluation roles (skills + optional subagents)
 
-Specialized **roles** are implemented as Agent Skills under `.agents/skills/` (not Cursor/Claude subagent files):
+Specialized **role logic** lives in Agent Skills under `.agents/skills/`. Thin **subagent wrappers** under `.codex/agents/` (symlinked to `.cursor/agents/` and `.claude/agents/`) spawn Technical and Market experts with isolated context when the host supports custom subagents; otherwise the orchestrator applies the skills inline.
 
-| Role | Skill |
-|------|-------|
-| Technical Expert | `technical-evaluation` — PoC criteria |
-| Market Expert | `market-evaluation` — Market criteria |
-| Orchestrator | `v-score-orchestrator` — coordinates flow, audits, runs scripts |
-| Scoring / matrix | `scoring-formulas`, `verdict-matrix`, `validate-rating` |
+| Role | Skill | Subagent wrapper |
+|------|-------|------------------|
+| Technical Expert | `technical-evaluation` — PoC criteria | `technical-expert` |
+| Market Expert | `market-evaluation` — Market criteria | `market-expert` |
+| Orchestrator | `v-score-orchestrator` — coordinates flow, audits, runs scripts | `v-score-orchestrator` |
+| Scoring / matrix | `scoring-formulas`, `verdict-matrix`, `validate-rating` | (skills only) |
 
 ---
 

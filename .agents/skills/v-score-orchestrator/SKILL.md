@@ -2,8 +2,9 @@
 name: v-score-orchestrator
 description: >-
   Coordinate a full V-Score evaluation: memory search, Technical and Market
-  experts, audit, deterministic scoring scripts, UI result write, optional
-  memory capture. Use for /evaluate-idea or when the user asks to evaluate an idea.
+  experts (prefer isolated subagents), audit, deterministic scoring scripts,
+  UI result write, optional memory capture. Use for /evaluate-idea or when the
+  user asks to evaluate an idea.
 ---
 
 # Skill: V-Score Orchestrator
@@ -40,19 +41,20 @@ node scripts/memory-search.mjs --keywords keyword1,keyword2
 
    * Read only returned paths. Never load the entire memory bank.
 
-4. **Apply technical-evaluation skill**
-   * Load and follow `.agents/skills/technical-evaluation/SKILL.md` (Technical Expert *role*).
-   * Infer PoC ratings from the idea; no user scoring; no separate subagent files required.
+4. **Delegate Technical Expert (prefer subagent)**
+   * **Preferred:** spawn project subagent `technical-expert` (`.codex/agents/technical-expert.md`; also linked under `.cursor/agents/` and `.claude/agents/`). Pass title, description, run id, and selected memory paths only.
+   * **Fallback** (host cannot spawn custom subagents): load and follow `.agents/skills/technical-evaluation/SKILL.md` inline.
    * Require `evaluations/<id>/technical.md` and PoC ratings.
+   * Do not run Market work in the same subagent context.
 
-5. **Apply market-evaluation skill**
-   * Load and follow `.agents/skills/market-evaluation/SKILL.md` (Market Expert *role*).
-   * Infer Market ratings from the idea; no user scoring; no separate subagent files required.
+5. **Delegate Market Expert (prefer subagent)**
+   * **Preferred:** spawn project subagent `market-expert` in **parallel** with Technical when the host allows. Pass the same idea inputs; do not pass Technical ratings or `technical.md` content (isolation).
+   * **Fallback:** load and follow `.agents/skills/market-evaluation/SKILL.md` inline.
    * Require `evaluations/<id>/market.md` and Market ratings.
 
 6. **Audit**
    * Check each rating is an integer 1–10 (re-run `validate-rating.mjs` if unsure).
-   * Resolve inconsistencies (e.g. Resources high but checklist mostly unavailable) with the user or by re-asking the expert.
+   * Resolve inconsistencies (e.g. Resources high but checklist mostly unavailable) with the user or by re-asking the expert subagent.
    * Write `evaluations/<id>/ratings.json`:
 
 ```json
@@ -100,6 +102,7 @@ node scripts/memory-capture.mjs \
 ## Invariants
 
 * LLM reasons; scripts calculate.
-* Roles are skills only (technical-evaluation, market-evaluation, v-score-orchestrator) — same pattern as the Downloads reference. No platform-specific subagent files.
+* **Canon:** role logic lives in `.agents/skills/` (`technical-evaluation`, `market-evaluation`, `v-score-orchestrator`).
+* **Spawn wrappers:** thin agent files under `.codex/agents/` (symlinked to `.cursor/agents/` and `.claude/agents/`) for isolated Technical/Market runs when the host supports custom subagents.
 * Also apply scoring-formulas, verdict-matrix, and validate-rating skills when scoring.
 * Threshold 65 inclusive; official formulas unchanged.
