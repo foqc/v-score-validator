@@ -7,7 +7,7 @@ Agents reason about technical feasibility and market viability. Node scripts com
 ## Features
 
 * **Technical** and **Market** evaluation skills produce criterion ratings with reasoning.
-* Optional **subagent wrappers** (`technical-expert`, `market-expert`) isolate those roles when Cursor/Codex/Claude can spawn them.
+* Optional **subagent wrappers** (`technical-expert`, `market-expert`) isolate those roles when the host can spawn them.
 * **Orchestrator** skill + `/evaluate-idea` coordinate the run, audit outputs, and write the UI result.
 * Weighted **PoC** and **Market** scores via scripts (official formulas; threshold 65 inclusive).
 * Plain-language **recommendation** from the decision matrix.
@@ -16,7 +16,7 @@ Agents reason about technical feasibility and market viability. Node scripts com
 
 ## Getting started
 
-Skills live under `.agents/skills/` (Cursor and Codex). Subagent wrappers live under `.codex/agents/` with symlinks from `.cursor/agents/` and `.claude/agents/`. Claude also uses `.claude/skills/` and `.claude/commands/` as symlinks into `.agents/`.
+All agent config lives under `.agents/` — skills, commands, and subagent wrappers. Cursor and Claude Code both read this folder; no per-host copies or symlinks.
 
 ### 1. Run an evaluation
 
@@ -59,10 +59,9 @@ Market = (Pain×4) + (Pay×3) + (Size×2) + (Differentiation×1)
 
 | Path | Role |
 |------|------|
-| `.agents/skills/` | Canonical skills (Claude: symlinked under `.claude/skills/`) |
-| `.agents/commands/` | `/evaluate-idea` entry (Claude: `.claude/commands/` symlink) |
-| `.codex/agents/` | Canonical thin subagent wrappers |
-| `.cursor/agents/` / `.claude/agents/` | Symlinks → `.codex/agents/` |
+| `.agents/skills/` | Canonical skill logic |
+| `.agents/commands/` | `/evaluate-idea` entry command |
+| `.agents/agents/` | Thin subagent wrappers (`technical-expert`, `market-expert`) |
 | `scripts/` | Deterministic CLI |
 | `evaluations/` | Run artifacts + `latest.json` |
 | `memory-bank/` | Keyword-indexed knowledge |

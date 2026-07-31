@@ -14,17 +14,16 @@ Operating rules for agents working in this repo. Product requirements: `SPEC.md`
 
 ## Structure
 
-* `.agents/skills/` — canonical skill logic (Cursor, Codex, Claude)
-* `.agents/commands/evaluate-idea.md` — entry command (Claude: `.claude/commands/` symlink)
-* `.codex/agents/` — canonical thin subagent wrappers (`technical-expert`, `market-expert`)
-* `.cursor/agents/` / `.claude/agents/` — symlinks → `.codex/agents/`
-* `.claude/skills/` / `.claude/commands/` — symlinks → `.agents/`
+* `.agents/` — single agent config root (Cursor and Claude Code both read it)
+  * `skills/` — canonical skill logic
+  * `commands/evaluate-idea.md` — entry command
+  * `agents/` — thin subagent wrappers (`technical-expert`, `market-expert`)
 * `scripts/` — deterministic validation, scoring, recommendation, memory, verify
 * `evaluations/` — run artifacts and `latest.json` for the UI
 * `memory-bank/` — keyword-indexed knowledge documents
 * `src/` — UI viewer only (`viewer.js` loads result JSON)
 
-Role **logic** lives in skills. Subagent files are thin spawn wrappers for isolated Technical/Market runs when the host supports them.
+Do not add `.claude/`, `.cursor/`, or `.codex/` copies or symlinks. Role **logic** lives in skills. Subagent files are thin spawn wrappers for isolated Technical/Market runs when the host supports them.
 
 ## Skills map
 

@@ -42,13 +42,13 @@ node scripts/memory-search.mjs --keywords keyword1,keyword2
    * Read only returned paths. Never load the entire memory bank.
 
 4. **Delegate Technical Expert (prefer subagent)**
-   * **Preferred:** spawn project subagent `technical-expert` (`.codex/agents/technical-expert.md`; also linked under `.cursor/agents/` and `.claude/agents/`). Pass title, description, run id, and selected memory paths only.
+   * **Preferred:** spawn project subagent `technical-expert` (`.agents/agents/technical-expert.md`). Pass title, description, run id, and selected memory paths only.
    * **Fallback** (host cannot spawn custom subagents): load and follow `.agents/skills/technical-evaluation/SKILL.md` inline.
    * Require `evaluations/<id>/technical.md` and PoC ratings.
    * Do not run Market work in the same subagent context.
 
 5. **Delegate Market Expert (prefer subagent)**
-   * **Preferred:** spawn project subagent `market-expert` in **parallel** with Technical when the host allows. Pass the same idea inputs; do not pass Technical ratings or `technical.md` content (isolation).
+   * **Preferred:** spawn project subagent `market-expert` (`.agents/agents/market-expert.md`) in **parallel** with Technical when the host allows. Pass the same idea inputs; do not pass Technical ratings or `technical.md` content (isolation).
    * **Fallback:** load and follow `.agents/skills/market-evaluation/SKILL.md` inline.
    * Require `evaluations/<id>/market.md` and Market ratings.
 
@@ -103,6 +103,7 @@ node scripts/memory-capture.mjs \
 
 * LLM reasons; scripts calculate.
 * **Canon:** role logic lives in `.agents/skills/` (`technical-evaluation`, `market-evaluation`, `v-score-orchestrator`).
-* **Spawn wrappers:** thin agent files under `.codex/agents/` (symlinked to `.cursor/agents/` and `.claude/agents/`) for isolated Technical/Market runs (`technical-expert`, `market-expert`) when the host supports custom subagents. Orchestration itself is this skill + `/evaluate-idea`, not a spawnable agent.
+* **Spawn wrappers:** thin agent files under `.agents/agents/` for isolated Technical/Market runs (`technical-expert`, `market-expert`) when the host supports custom subagents. Orchestration itself is this skill + `/evaluate-idea`, not a spawnable agent.
+* **Single config root:** keep skills, commands, and agents under `.agents/` only. Do not recreate `.claude/`, `.cursor/`, or `.codex/` trees.
 * Also apply scoring-formulas, verdict-matrix, and validate-rating skills when scoring.
 * Threshold 65 inclusive; official formulas unchanged.

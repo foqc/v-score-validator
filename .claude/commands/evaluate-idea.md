@@ -1,1 +1,0 @@
-../../.agents/commands/evaluate-idea.md

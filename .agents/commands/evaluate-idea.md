@@ -8,7 +8,7 @@ You are running the V-Score Validator workflow. Follow `.agents/skills/v-score-o
 
 Also load when needed: `technical-evaluation`, `market-evaluation`, `scoring-formulas`, `verdict-matrix`, `validate-rating`.
 
-Prefer spawning project subagents `technical-expert` and `market-expert` in parallel (isolated context). Fallback: apply the matching skills inline if the host cannot spawn custom subagents.
+Prefer spawning project subagents `technical-expert` and `market-expert` from `.agents/agents/` in parallel (isolated context). Fallback: apply the matching skills inline if the host cannot spawn custom subagents.
 
 ## User task
 

@@ -12,7 +12,7 @@ Agents propose criterion ratings with reasoning. Scripts validate ratings, compu
 
 | Layer | Stack |
 |-------|-------|
-| Agents / Skills | Skills under `.agents/skills/`; spawn wrappers under `.codex/agents/` (symlinked to `.cursor/agents/` and `.claude/agents/`) |
+| Agents / Skills | Skills under `.agents/skills/`; spawn wrappers under `.agents/agents/` |
 | Deterministic logic | Node.js ES modules, standard library only |
 | UI | HTML5, CSS3, vanilla ES6 |
 | Knowledge | Markdown docs + `memory-bank/index.json` |
@@ -54,11 +54,9 @@ src/ UI viewer
 ```
 /
 ├── .agents/
+│   ├── agents/               # thin subagent wrappers
 │   ├── commands/
 │   └── skills/               # canonical role logic
-├── .codex/agents/            # canonical thin subagent wrappers
-├── .cursor/agents/           # symlinks → .codex/agents/
-├── .claude/                  # skills/commands → .agents/; agents → .codex/agents/
 ├── scripts/
 │   ├── lib/scoring.mjs
 │   └── *.mjs
@@ -85,7 +83,7 @@ src/ UI viewer
 | Concern | Location | Rule |
 |---------|----------|------|
 | AI reasoning | `.agents/skills` | Analyze evidence; propose 1–10 ratings; never invent formulas |
-| Isolated expert runs | `.codex/agents/` (+ Cursor/Claude symlinks) | Thin wrappers; spawn Technical/Market with separate context |
+| Isolated expert runs | `.agents/agents/` | Thin wrappers; spawn Technical/Market with separate context |
 | Deterministic calc | `scripts/*.mjs` | Validate, weight, matrix only |
 | Coordination | Orchestrator skill/agent | Sequence, spawn experts, audit, inconsistency resolution |
 | Knowledge retrieval | `memory-bank` + `memory-search.mjs` | Keyword search; no full-bank dumps |
