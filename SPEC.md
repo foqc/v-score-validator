@@ -133,7 +133,7 @@ Agents retrieve prior knowledge via `scripts/memory-search.mjs` using keywords. 
 
 # Evaluation roles (skills + optional subagents)
 
-Specialized **role logic** lives in Agent Skills under `.agents/skills/`. Thin **subagent wrappers** under `.agents/agents/` spawn Technical and Market experts with isolated context when the host supports custom subagents; otherwise the orchestrator applies the skills inline. All agent config stays under `.agents/` (no per-host copies).
+Specialized **role logic** lives in Agent Skills under `.agents/skills/`. Thin **subagent wrappers** under `.agents/agents/` spawn Technical and Market experts with isolated context when the host supports custom subagents; otherwise the orchestrator applies the skills inline. Canonical config stays under `.agents/`; host folders such as `.claude/` may expose it via relative directory symlinks only (no file copies).
 
 | Role | Skill | Subagent wrapper |
 |------|-------|------------------|

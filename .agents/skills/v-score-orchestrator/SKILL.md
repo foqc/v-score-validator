@@ -104,6 +104,6 @@ node scripts/memory-capture.mjs \
 * LLM reasons; scripts calculate.
 * **Canon:** role logic lives in `.agents/skills/` (`technical-evaluation`, `market-evaluation`, `v-score-orchestrator`).
 * **Spawn wrappers:** thin agent files under `.agents/agents/` for isolated Technical/Market runs (`technical-expert`, `market-expert`) when the host supports custom subagents. Orchestration itself is this skill + `/evaluate-idea`, not a spawnable agent.
-* **Single config root:** keep skills, commands, and agents under `.agents/` only. Do not recreate `.claude/`, `.cursor/`, or `.codex/` trees.
+* **Single config root:** edit skills, commands, and agents under `.agents/` only. Host discovery (e.g. `.claude/`) may use relative directory symlinks into `.agents/` — never file copies.
 * Also apply scoring-formulas, verdict-matrix, and validate-rating skills when scoring.
 * Threshold 65 inclusive; official formulas unchanged.

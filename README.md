@@ -16,7 +16,7 @@ Agents reason about technical feasibility and market viability. Node scripts com
 
 ## Getting started
 
-All agent config lives under `.agents/` — skills, commands, and subagent wrappers. Cursor and Claude Code both read this folder; no per-host copies or symlinks.
+Canonical agent config lives under `.agents/` (skills, commands, subagent wrappers). Claude Code discovers the same trees via relative directory symlinks under `.claude/` (`skills`, `agents`, `commands` → `../.agents/...`). Edit only `.agents/`; do not copy files into host folders.
 
 ### 1. Run an evaluation
 
@@ -62,6 +62,7 @@ Market = (Pain×4) + (Pay×3) + (Size×2) + (Differentiation×1)
 | `.agents/skills/` | Canonical skill logic |
 | `.agents/commands/` | `/evaluate-idea` entry command |
 | `.agents/agents/` | Thin subagent wrappers (`technical-expert`, `market-expert`) |
+| `.claude/{skills,agents,commands}` | Symlinks → `.agents/...` (Claude Code) |
 | `scripts/` | Deterministic CLI |
 | `evaluations/` | Run artifacts + `latest.json` |
 | `memory-bank/` | Keyword-indexed knowledge |

@@ -54,9 +54,13 @@ src/ UI viewer
 ```
 /
 ├── .agents/
-│   ├── agents/               # thin subagent wrappers
+│   ├── agents/               # thin subagent wrappers (canonical)
 │   ├── commands/
 │   └── skills/               # canonical role logic
+├── .claude/
+│   ├── agents -> ../.agents/agents
+│   ├── commands -> ../.agents/commands
+│   └── skills -> ../.agents/skills
 ├── scripts/
 │   ├── lib/scoring.mjs
 │   └── *.mjs
